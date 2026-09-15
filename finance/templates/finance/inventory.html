@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory & Stock Management — Ecolith Enterprises</title>
+  {% load static %}
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'finance/css/style.css' %}">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+</head>
+<body>
+  <div class="app">
+    <!-- Header with Branding and Unified Navigation -->
+    <header class="header">
+      <div class="header__brand">
+        <div class="brand-title">
+          <img src="{% static 'finance/images/logo.png' %}" alt="Ecolith Logo" onerror="this.src='https://ui-avatars.com/api/?name=EE&background=10b981&color=fff'">
+          <h1>Ecolith Enterprises</h1>
+        </div>
+        <div class="brand-meta">
+          <span class="location"><i class="fa-solid fa-location-dot"></i> Itahari, Sunsari</span>
+        </div>
+        <p class="slogan">Powering Your Journey with Reliable Electric Vehicles, Advanced Battery Solutions, and Complete EV Support.</p>
+      </div>
+
+      <!-- Unified 5-Page Navigation -->
+      <nav class="nav-pills">
+        <a href="{% url 'dashboard' %}" class="nav-link"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+        <a href="{% url 'expenses' %}" class="nav-link"><i class="fa-solid fa-receipt"></i> Daily Expenses</a>
+        <a href="{% url 'customers' %}" class="nav-link"><i class="fa-solid fa-users"></i> Customer Ledger</a>
+        <a href="{% url 'inventory' %}" class="nav-link active"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a>
+        <a href="{% url 'reports' %}" class="nav-link"><i class="fa-solid fa-file-invoice-dollar"></i> Reports</a>
+      </nav>
+
+      <!-- User Profile & Logout -->
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <button type="button" class="theme-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); background: var(--surface-2); padding: 0.4rem 0.8rem; border-radius: 6px; border: 1px solid var(--border);">
+          <i class="fa-solid fa-user-circle" style="color: var(--primary);"></i> {{ request.user.username }}
+        </span>
+        <a href="{% url 'logout' %}" class="btn btn--ghost" style="padding: 0.4rem 0.8rem; font-size: 0.82rem; border-color: rgba(239, 68, 68, 0.3); color: #ef4444;">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </header>
+
+    <!-- Top Action Bar -->
+    <div class="quick-actions" style="justify-content: space-between; align-items: center;">
+      <div>
+        <h2 style="margin: 0; font-size: 1.3rem;"><i class="fa-solid fa-boxes-packing"></i> Warehouse Inventory & Stock Control</h2>
+        <p style="margin: 0.25rem 0 0; color: var(--text-muted); font-size: 0.85rem;">Track EV batteries, vehicles, chargers, and spare parts stock levels.</p>
+      </div>
+      <button type="button" class="btn btn--primary btn--glow" id="addItemBtn">
+        <i class="fa-solid fa-plus"></i> Add New Product / Stock Item
+      </button>
+    </div>
+
+    <!-- Inventory Stat Cards -->
+    <section class="summary">
+      <article class="card card--income glass">
+        <div class="card__icon"><i class="fa-solid fa-cubes"></i></div>
+        <div class="card__content">
+          <span class="card__label">Total Active SKUs</span>
+          <span class="card__value" id="invTotalSKUs">0</span>
+        </div>
+      </article>
+
+      <article class="card card--balance glass">
+        <div class="card__icon"><i class="fa-solid fa-vault"></i></div>
+        <div class="card__content">
+          <span class="card__label">Total Asset Value (Cost)</span>
+          <span class="card__value" id="invCostValue">NPR 0.00</span>
+        </div>
+      </article>
+
+      <article class="card card--income glass">
+        <div class="card__icon"><i class="fa-solid fa-tags"></i></div>
+        <div class="card__content">
+          <span class="card__label">Potential Retail Value</span>
+          <span class="card__value" id="invSellValue">NPR 0.00</span>
+        </div>
+      </article>
+
+      <article class="card glass" style="border-left: 4px solid #ef4444;">
+        <div class="card__icon" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="card__content">
+          <span class="card__label">Low Stock Alerts</span>
+          <span class="card__value" style="color: #ef4444;" id="invLowStockAlerts">0</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- Filters Bar -->
+    <section class="filters glass">
+      <div class="filters__group">
+        <label for="invSearch">Search SKU / Item Name</label>
+        <input type="text" id="invSearch" placeholder="e.g. ECO-BAT or Lithium...">
+      </div>
+      <div class="filters__group">
+        <label for="invFilterCategory">Category</label>
+        <select id="invFilterCategory">
+          <option value="">All Categories</option>
+        </select>
+      </div>
+      <div class="filters__group">
+        <label for="invFilterStock">Stock Alert Status</label>
+        <select id="invFilterStock">
+          <option value="">All Stock Levels</option>
+          <option value="low_stock">Low Stock Alerts Only</option>
+          <option value="out_of_stock">Out of Stock Only</option>
+        </select>
+      </div>
+      <button type="button" class="btn btn--ghost" id="invClearFiltersBtn"><i class="fa-solid fa-filter-circle-xmark"></i> Clear Filters</button>
+    </section>
+
+    <!-- Inventory Items Table -->
+    <section class="table-section glass">
+      <div class="table-section__header">
+        <h2><i class="fa-solid fa-warehouse"></i> Inventory Stock Master List</h2>
+        <span class="table-section__count" id="invItemCount">0 items</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>SKU Code</th>
+              <th>Product / Item Name</th>
+              <th>Category</th>
+              <th>Cost Price</th>
+              <th>Retail Price</th>
+              <th>Wholesale Price</th>
+              <th class="text-right">Stock Qty</th>
+              <th>Stock Status</th>
+              <th class="text-right">Total Cost Val</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryBody">
+            <tr>
+              <td colspan="10" class="empty-state">Loading inventory items...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- Add / Edit Item Modal -->
+  <div class="modal" id="itemModal" aria-hidden="true">
+    <div class="modal__backdrop" data-close-item-modal></div>
+    <div class="modal__dialog" role="dialog">
+      <div class="modal__header">
+        <h2 id="itemModalTitle">Add Inventory Item</h2>
+        <button type="button" class="modal__close" data-close-item-modal>&times;</button>
+      </div>
+      <form id="itemForm">
+        <input type="hidden" id="itemId">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="itemSKU">SKU / Item Code</label>
+            <input type="text" id="itemSKU" placeholder="e.g. ECO-BAT-48100" required>
+          </div>
+          <div class="form-group">
+            <label for="itemCategory">Category</label>
+            <input type="text" id="itemCategory" placeholder="e.g. Lithium Batteries" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="itemName">Product / Item Name</label>
+          <input type="text" id="itemName" placeholder="e.g. 48V 100Ah Lithium Battery Pack" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="itemCostPrice">Cost Price (Cost)</label>
+            <input type="number" id="itemCostPrice" step="0.01" min="0" placeholder="0.00" required>
+          </div>
+          <div class="form-group">
+            <label for="itemSellingPrice">Retail Price (NPR)</label>
+            <input type="number" id="itemSellingPrice" step="0.01" min="0" placeholder="0.00" required>
+          </div>
+          <div class="form-group">
+            <label for="itemWholesalePrice">Wholesale Price (NPR)</label>
+            <input type="number" id="itemWholesalePrice" step="0.01" min="0" placeholder="0.00" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="itemQuantity">Current Stock Qty</label>
+            <input type="number" id="itemQuantity" min="0" placeholder="0" required>
+          </div>
+          <div class="form-group">
+            <label for="itemReorderLevel">Low Stock Reorder Alert Level</label>
+            <input type="number" id="itemReorderLevel" min="1" value="5" required>
+          </div>
+          <div class="form-group">
+            <label for="itemUnit">Unit of Measure</label>
+            <input type="text" id="itemUnit" placeholder="e.g. Pcs, Units, Sets" value="Pcs" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="itemDescription">Description / Specifications <span class="optional">(optional)</span></label>
+          <textarea id="itemDescription" rows="2" placeholder="Battery specs, model details..."></textarea>
+        </div>
+        <p class="form-error" id="itemFormError" hidden></p>
+        <div class="modal__actions">
+          <button type="button" class="btn btn--ghost" data-close-item-modal>Cancel</button>
+          <button type="submit" class="btn btn--primary btn--glow">Save Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+  <script src="{% static 'finance/js/inventory.js' %}"></script>
+</body>
+</html>

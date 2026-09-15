@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Ecolith Enterprises</title>
+  {% load static %}
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0284c7; /* Professional Blue */
+      --primary-hover: #0369a1;
+      --primary-light: #e0f2fe;
+      --secondary: #10b981; /* Emerald */
+      --bg-base: #f8fafc; /* Very light slate */
+      --bg-surface: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --border-color: #e2e8f0;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    
+    h1, h2, h3, h4, .brand-text {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Subtle mesh gradient background */
+    .hero-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background-image: 
+        radial-gradient(at 10% 20%, rgba(2, 132, 199, 0.08) 0px, transparent 50%),
+        radial-gradient(at 90% 10%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+        radial-gradient(at 50% 80%, rgba(2, 132, 199, 0.05) 0px, transparent 50%);
+      pointer-events: none;
+    }
+
+    /* Navbar */
+    .landing-nav {
+      position: relative;
+      z-index: 10;
+      padding: 1rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    
+    .nav-brand img {
+      width: 40px;
+      height: 40px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.6rem 1.5rem;
+      font-size: 0.95rem;
+      border-radius: 8px;
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-secondary:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: 1px solid transparent;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
+      transform: translateY(-1px);
+    }
+
+    /* Hero Content */
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      background: var(--primary-light);
+      color: var(--primary-hover);
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 1.5rem;
+      animation: fadeInDown 0.6s ease forwards;
+    }
+
+    .hero-title {
+      font-size: 4.5rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      color: var(--text-main);
+      letter-spacing: -1.5px;
+      animation: fadeInUp 0.8s ease forwards 0.2s;
+      opacity: 0;
+    }
+
+    .hero-title span {
+      color: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin-bottom: 2.5rem;
+      line-height: 1.6;
+      animation: fadeInUp 0.8s ease forwards 0.4s;
+      opacity: 0;
+    }
+    
+    .hero-cta-group {
+      display: flex;
+      gap: 1rem;
+      animation: fadeInUp 0.8s ease forwards 0.6s;
+      opacity: 0;
+    }
+
+    .hero-cta-group .btn {
+      padding: 1rem 2rem;
+      font-size: 1.05rem;
+    }
+
+    /* Features Section */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      width: 100%;
+      max-width: 1100px;
+      margin: 5rem auto 4rem;
+      padding: 0 2rem;
+      animation: fadeInUp 0.8s ease forwards 0.8s;
+      opacity: 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    .feature-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      padding: 2.5rem 2rem;
+      border-radius: 16px;
+      text-align: left;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-md);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: #cbd5e1;
+    }
+
+    .feature-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 14px;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .feature-card.secondary .feature-icon {
+      background: #dcfce7;
+      color: var(--secondary);
+    }
+
+    .feature-card.accent .feature-icon {
+      background: #f3e8ff;
+      color: #9333ea;
+    }
+
+    .feature-card h3 {
+      font-size: 1.35rem;
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .landing-nav { padding: 1rem 1.5rem; }
+      .hero-title { font-size: 3rem; }
+      .hero-cta-group { flex-direction: column; width: 100%; max-width: 320px; }
+      .hero-cta-group .btn { width: 100%; }
+      .hero-content { padding-top: 4rem; }
+      .features-grid { margin-top: 3rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="hero-bg"></div>
+
+  <nav class="landing-nav">
+    <a href="/" class="nav-brand brand-text">
+      <img src="{% static 'finance/images/logo.png' %}" alt="Ecolith Logo" onerror="this.src='https://ui-avatars.com/api/?name=EE&background=0284c7&color=fff'">
+      Ecolith Enterprises
+    </a>
+    <div class="nav-links">
+      <a href="{% url 'login' %}" class="btn btn-secondary">Sign In</a>
+      <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+    </div>
+  </nav>
+
+  <main class="hero-content">
+    <div class="hero-badge">
+      <i class="fa-solid fa-bolt"></i> Enterprise Management Suite
+    </div>
+    <h1 class="hero-title">Manage Your Business <br><span>Intelligently</span></h1>
+    <p class="hero-subtitle">Experience a state-of-the-art platform designed to streamline your finances, inventory, and customer relationships all in one beautifully crafted, clean suite.</p>
+    
+    <div class="hero-cta-group">
+      <a href="{% url 'register' %}" class="btn btn-primary">
+        Start for Free <i class="fa-solid fa-arrow-right"></i>
+      </a>
+      <a href="{% url 'login' %}" class="btn btn-secondary">
+        <i class="fa-regular fa-user"></i> Access Dashboard
+      </a>
+    </div> 
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+        <h3>Financial Analytics</h3>
+        <p>Gain real-time insights into your revenue, expenses, and overall financial health with our advanced, crystal-clear reporting dashboards.</p>
+      </div>
+      <div class="feature-card secondary">
+        <div class="feature-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+        <h3>Inventory Control</h3>
+        <p>Keep precise track of stock levels, monitor valuations, and automate your entire supply chain seamlessly.</p>
+      </div>
+      <div class="feature-card accent">
+        <div class="feature-icon"><i class="fa-solid fa-users"></i></div>
+        <h3>Customer Ledgers</h3>
+        <p>Manage customer relationships, track outstanding balances, and streamline your receivables in a secure environment.</p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

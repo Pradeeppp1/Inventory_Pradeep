@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Ecolith Enterprises</title>
+  {% load static %}
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'finance/css/style.css' %}">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+</head>
+<body>
+  <div class="app">
+    <!-- Header with Branding and Unified Navigation -->
+    <header class="header">
+      <div class="header__brand">
+        <div class="brand-title">
+          <img src="{% static 'finance/images/logo.png' %}" alt="Ecolith Logo" onerror="this.src='https://ui-avatars.com/api/?name=EE&background=10b981&color=fff'">
+          <h1>Ecolith Enterprises</h1>
+        </div>
+        <div class="brand-meta">
+          <span class="location"><i class="fa-solid fa-shield-halved"></i> Admin Portal</span>
+        </div>
+        <p class="slogan">Manage staff accounts and approve access requests.</p>
+      </div>
+
+      <!-- Unified Navigation -->
+      <nav class="nav-pills">
+        <a href="{% url 'dashboard' %}" class="nav-link"><i class="fa-solid fa-chart-line"></i> Main Dashboard</a>
+        <a href="{% url 'admin_dashboard' %}" class="nav-link active"><i class="fa-solid fa-users-gear"></i> Admin Approvals</a>
+      </nav>
+
+      <!-- User Profile & Logout -->
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <button type="button" class="theme-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); background: var(--surface-2); padding: 0.4rem 0.8rem; border-radius: 6px; border: 1px solid var(--border);">
+          <i class="fa-solid fa-user-circle" style="color: var(--primary);"></i> {{ request.user.username }}
+        </span>
+        <a href="{% url 'logout' %}" class="btn btn--ghost" style="padding: 0.4rem 0.8rem; font-size: 0.82rem; border-color: rgba(239, 68, 68, 0.3); color: #ef4444;">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </header>
+
+    <div class="table-section glass">
+      <div class="table-section__header">
+        <h2><i class="fa-solid fa-user-clock"></i> Pending Approvals</h2>
+        <span class="table-section__count">{{ pending_users.count }} users waiting</span>
+      </div>
+      
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Requested Role</th>
+              <th>Registered On</th>
+              <th class="text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in pending_users %}
+            <tr>
+              <td>
+                <div style="font-weight: 600; color: var(--text-base);">{{ u.username }}</div>
+              </td>
+              <td>
+                <span class="badge badge--income">{{ u.userprofile.get_role_display }}</span>
+              </td>
+              <td>
+                <div style="color: var(--text-muted); font-size: 0.85rem;">{{ u.date_joined|date:"M d, Y" }}</div>
+              </td>
+              <td class="text-right">
+                <form method="POST" action="{% url 'approve_user' u.id %}" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn--primary btn--glow" style="padding: 0.4rem 1rem; font-size: 0.85rem;">
+                    <i class="fa-solid fa-check"></i> Approve
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="empty-state">
+                <i class="fa-regular fa-circle-check" style="font-size: 2.5rem; color: var(--primary); opacity: 0.5; margin-bottom: 1rem; display: block;"></i>
+                No pending approval requests.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const themeToggleBtn = document.getElementById('themeToggleBtn');
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+          const doc = document.documentElement;
+          const currentTheme = doc.getAttribute('data-theme');
+          const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+          doc.setAttribute('data-theme', newTheme);
+          localStorage.setItem('theme', newTheme);
+          
+          const icon = themeToggleBtn.querySelector('i');
+          if (newTheme === 'light') {
+            icon.classList.replace('fa-sun', 'fa-moon');
+          } else {
+            icon.classList.replace('fa-moon', 'fa-sun');
+          }
+        });
+        
+        // Initial icon state
+        const icon = themeToggleBtn.querySelector('i');
+        if (document.documentElement.getAttribute('data-theme') === 'light') {
+          icon.classList.replace('fa-sun', 'fa-moon');
+        } else {
+          icon.classList.replace('fa-moon', 'fa-sun');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

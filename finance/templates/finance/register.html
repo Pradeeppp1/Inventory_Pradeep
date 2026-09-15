@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Account — Ecolith Enterprises</title>
+  {% load static %}
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'finance/css/style.css' %}">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+      background: radial-gradient(circle at top right, var(--bg-card), var(--bg-base));
+      position: relative;
+      overflow: hidden;
+    }
+    /* Decorative blur elements for background */
+    body::before, body::after {
+      content: '';
+      position: absolute;
+      width: 40vw;
+      height: 40vw;
+      border-radius: 50%;
+      background: var(--primary);
+      filter: blur(100px);
+      opacity: 0.1;
+      z-index: 0;
+      animation: float 20s infinite alternate;
+    }
+    body::before {
+      top: -10vw;
+      left: -10vw;
+    }
+    body::after {
+      bottom: -10vw;
+      right: -10vw;
+      background: #8b5cf6;
+      animation-delay: -10s;
+    }
+    @keyframes float {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(5vw, 5vw); }
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+      padding: 3rem 2.5rem;
+      border-radius: 24px;
+      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.4);
+      background: rgba(30, 41, 59, 0.6); /* fallback */
+      background: color-mix(in srgb, var(--bg-card) 60%, transparent);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+      z-index: 1;
+      transform: translateY(0);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+    [data-theme="light"] .auth-card {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.1);
+    }
+    .auth-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.5);
+    }
+    [data-theme="light"] .auth-card:hover {
+      box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.15);
+    }
+    .auth-brand {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .auth-brand img {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 8px 16px rgba(16, 185, 129, 0.3));
+      transition: transform 0.3s ease;
+    }
+    .auth-brand img:hover {
+      transform: scale(1.05) rotate(-5deg);
+    }
+    .auth-brand h1 {
+      margin: 0;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--text-base), var(--text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .auth-brand p {
+      margin: 0.5rem 0 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 400;
+    }
+    .form-errors-box {
+      background: rgba(239, 68, 68, 0.1);
+      border-left: 4px solid #ef4444;
+      color: #ef4444;
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+      animation: slideIn 0.3s ease-out forwards;
+    }
+    [data-theme="dark"] .form-errors-box {
+      color: #fca5a5;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .form-group {
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: color 0.3s ease;
+    }
+    .form-group:focus-within label {
+      color: var(--primary);
+    }
+    .input-icon-wrapper {
+      position: relative;
+    }
+    .input-icon-wrapper i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1rem;
+      transition: color 0.3s ease;
+    }
+    .form-group:focus-within .input-icon-wrapper i {
+      color: var(--primary);
+    }
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem 1rem 0.8rem 2.75rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      color: var(--text-base);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+    [data-theme="light"] .form-group input {
+      background: rgba(0, 0, 0, 0.02);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .form-group input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    }
+    [data-theme="light"] .form-group input:focus {
+      background: white;
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 0.9rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, var(--primary), #059669);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 20px -10px rgba(16, 185, 129, 0.5);
+    }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 25px -10px rgba(16, 185, 129, 0.6);
+      background: linear-gradient(135deg, #059669, var(--primary));
+    }
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+    .auth-footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 1.5rem;
+    }
+    [data-theme="light"] .auth-footer {
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    .auth-footer a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .auth-footer a:hover {
+      color: #34d399;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-card">
+    <div class="auth-brand">
+      <img src="{% static 'finance/images/logo.png' %}" alt="Ecolith Logo" onerror="this.src='https://ui-avatars.com/api/?name=EE&background=10b981&color=fff'">
+      <h1>Create an Account</h1>
+      <p>Join Ecolith Enterprises today.</p>
+    </div>
+
+    {% if form.errors %}
+    <div class="form-errors-box">
+      <div style="font-weight: 600; margin-bottom: 0.25rem;"><i class="fa-solid fa-triangle-exclamation"></i> Action Required</div>
+      <ul style="margin: 0 0 0 1.25rem; padding: 0;">
+        {% for field in form %}
+          {% for error in field.errors %}
+            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+          {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="id_username">Username</label>
+        <div class="input-icon-wrapper">
+          <i class="fa-solid fa-user"></i>
+          <input type="text" name="username" id="id_username" placeholder="Choose a unique username" required autofocus>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_password1">Password</label>
+        <div class="input-icon-wrapper">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" name="password1" id="id_password1" placeholder="Create strong password" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_password2">Confirm Password</label>
+        <div class="input-icon-wrapper">
+          <i class="fa-solid fa-shield-halved"></i>
+          <input type="password" name="password2" id="id_password2" placeholder="Repeat password" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_role">Role</label>
+        <div class="input-icon-wrapper">
+          <i class="fa-solid fa-briefcase"></i>
+          <select name="role" id="id_role" required style="width: 100%; padding: 0.8rem 1rem 0.8rem 2.75rem; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; color: var(--text-base); font-family: 'Outfit', sans-serif; font-size: 0.95rem; transition: all 0.3s ease; appearance: none;">
+            <option value="" disabled selected style="color: black;">Select a role...</option>
+            <option value="admin" style="color: black;">Admin</option>
+            <option value="manager" style="color: black;">Manager</option>
+            <option value="staff" style="color: black;">Staff</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top: 2rem;">
+        <button type="submit" class="btn-submit">
+          <i class="fa-solid fa-user-plus"></i> Register Account
+        </button>
+      </div>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account? <a href="{% url 'login' %}">Sign In</a>
+    </div>
+  </div>
+</body>
+</html>

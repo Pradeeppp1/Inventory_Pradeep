@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Ecolith Enterprises Executive Suite</title>
+  {% load static %}
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'finance/css/style.css' %}">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+      padding: 2.5rem;
+      border-radius: 14px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85);
+    }
+    .auth-brand {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .auth-brand img {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 0.75rem;
+    }
+    .auth-brand h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+    .auth-brand p {
+      margin: 0.35rem 0 0;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+    .alert-error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      margin-bottom: 1.25rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-card glass">
+    <div class="auth-brand">
+      <img src="{% static 'finance/images/logo.png' %}" alt="Ecolith Logo" onerror="this.src='https://ui-avatars.com/api/?name=EE&background=10b981&color=fff'">
+      <h1>Ecolith Enterprises</h1>
+      <p>Sign in to your Executive Management Account</p>
+    </div>
+
+    {% if error %}
+    <div class="alert-error">
+      <i class="fa-solid fa-circle-exclamation"></i> {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="id_username">Username</label>
+        <input type="text" name="username" id="id_username" placeholder="Enter username" required autofocus>
+      </div>
+
+      <div class="form-group">
+        <label for="id_password">Password</label>
+        <input type="password" name="password" id="id_password" placeholder="Enter password" required>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <button type="submit" class="btn btn--primary btn--glow" style="width: 100%; padding: 0.8rem;">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In to Account
+        </button>
+      </div>
+    </form>
+
+    <div style="text-align: center; margin-top: 1.75rem; font-size: 0.88rem; color: var(--text-muted);">
+      Don't have an account yet? <a href="{% url 'register' %}" style="color: var(--primary); font-weight: 600; text-decoration: none;">Create Account</a>
+    </div>
+  </div>
+</body>
+</html>
