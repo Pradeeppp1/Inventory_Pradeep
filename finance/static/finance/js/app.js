@@ -62,11 +62,12 @@ async function apiFetch(url, options = {}) {
 }
 
 function formatMoney(value) {
-  const num = Number(value);
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "NPR",
-  }).format(Number.isFinite(num) ? num : 0);
+  const num = Number.isFinite(Number(value)) ? Number(value) : 0;
+  const hasCents = num % 1 !== 0;
+  return "NPR " + num.toLocaleString("en-US", {
+    minimumFractionDigits: hasCents ? 2 : 0,
+    maximumFractionDigits: 2,
+  });
 }
 
 function formatDate(isoDate) {
@@ -163,16 +164,209 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+function renderDashPieChart(containerId, items, centerTitle = "CASH FLOW", centerVal = "") {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const validItems = (items || []).filter(it => Number(it.value) > 0);
+  const total = validItems.reduce((sum, it) => sum + Number(it.value), 0);
+
+  if (!total || !validItems.length) {
+    container.innerHTML = `
+      <div class="empty-state" style="padding: 2rem 1rem;">
+        <i class="fa-solid fa-chart-pie" style="font-size: 1.8rem; margin-bottom: 0.5rem; opacity: 0.4;"></i>
+        <p>No transaction data recorded yet.</p>
+      </div>`;
+    return;
+  }
+
+  const radius = 68;
+  const circumference = 2 * Math.PI * radius;
+  let offsetAccum = 0;
+
+  let circles = "";
+  if (validItems.length === 1) {
+    const item = validItems[0];
+    circles = `
+      <circle cx="85" cy="85" r="${radius}"
+              fill="none"
+              stroke="${item.color || '#10b981'}"
+              stroke-width="26"
+              style="transition: stroke-width 0.2s;"
+              data-label="${escapeHtml(item.label)}"
+              data-val="${escapeHtml(formatMoney(item.value))}">
+      </circle>
+    `;
+  } else {
+    circles = validItems.map(item => {
+      const fraction = Number(item.value) / total;
+      const strokeDash = fraction * circumference;
+      const gap = Math.max(0, circumference - strokeDash);
+      const strokeOffset = -offsetAccum;
+      offsetAccum += strokeDash;
+
+      return `
+        <circle cx="85" cy="85" r="${radius}"
+                fill="none"
+                stroke="${item.color}"
+                stroke-width="26"
+                stroke-dasharray="${strokeDash.toFixed(2)} ${gap.toFixed(2)}"
+                stroke-dashoffset="${strokeOffset.toFixed(2)}"
+                stroke-linecap="butt"
+                style="transition: stroke-width 0.2s;"
+                data-label="${escapeHtml(item.label)}"
+                data-val="${escapeHtml(formatMoney(item.value))}">
+        </circle>
+      `;
+    }).join("");
+  }
+
+  const legend = validItems.map(item => {
+    const pct = ((Number(item.value) / total) * 100).toFixed(1);
+    return `
+      <div class="donut-legend-item">
+        <div class="donut-legend-left">
+          <span class="donut-legend-dot" style="background:${item.color};"></span>
+          <span style="max-width:110px;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(item.label)}">${escapeHtml(item.label)}</span>
+        </div>
+        <span class="donut-legend-val">${pct}%</span>
+      </div>
+    `;
+  }).join("");
+
+  container.innerHTML = `
+    <div class="donut-layout">
+      <div class="donut-svg-wrap">
+        <svg viewBox="0 0 170 170" width="170" height="170">
+          <g transform="rotate(-90 85 85)">
+            ${circles}
+          </g>
+        </svg>
+        <div class="donut-center-label">
+          <span class="center-title">${escapeHtml(centerTitle)}</span>
+          <span class="center-val">${escapeHtml(centerVal || formatMoney(total))}</span>
+        </div>
+      </div>
+      <div class="donut-legend">
+        ${legend}
+      </div>
+    </div>
+  `;
+}
+
+function renderDashBarChart(containerId, bars) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const validBars = (bars || []).map(b => ({
+    label: b.label,
+    value: Math.max(0, Number(b.value) || 0),
+    color: b.color || "#10b981",
+  }));
+  const maxVal = Math.max(...validBars.map(b => b.value), 1);
+  const totalVal = validBars.reduce((s, b) => s + b.value, 0);
+
+  if (totalVal === 0) {
+    container.innerHTML = `
+      <div class="empty-state" style="padding: 2rem 1rem;">
+        <i class="fa-solid fa-chart-column" style="font-size: 1.8rem; margin-bottom: 0.5rem; opacity: 0.4;"></i>
+        <p>No financial data to compare yet.</p>
+      </div>`;
+    return;
+  }
+
+  const chartHeight = 140;
+  const svgWidth = 320;
+  const svgHeight = 205;
+  const barWidth = 42;
+  const gap = (svgWidth - (validBars.length * barWidth)) / (validBars.length + 1);
+
+  const rects = validBars.map((b, idx) => {
+    const val = b.value;
+    const h = Math.max(4, (val / maxVal) * chartHeight);
+    const x = gap + idx * (barWidth + gap);
+    const y = (chartHeight - h) + 24;
+
+    return `
+      <g>
+        <text x="${(x + barWidth / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}"
+              font-size="10" font-weight="700" text-anchor="middle"
+              style="fill: var(--text, #f8fafc); font-family: Inter, -apple-system, sans-serif;">
+          ${formatMoney(val).replace("NPR ", "")}
+        </text>
+        <rect class="bar-rect" x="${x.toFixed(1)}" y="${y.toFixed(1)}"
+              width="${barWidth}" height="${h.toFixed(1)}" rx="6"
+              style="fill: ${b.color};"
+              data-label="${escapeHtml(b.label)}" data-val="${escapeHtml(formatMoney(val))}">
+          <title>${escapeHtml(b.label)}: ${formatMoney(val)}</title>
+        </rect>
+        <text x="${(x + barWidth / 2).toFixed(1)}" y="${(chartHeight + 42).toFixed(1)}"
+              font-size="11" font-weight="600" text-anchor="middle"
+              style="fill: var(--text-muted, #94a3b8); font-family: Inter, -apple-system, sans-serif;">
+          ${escapeHtml(b.label)}
+        </text>
+      </g>
+    `;
+  }).join("");
+
+  container.innerHTML = `
+    <div class="bar-chart-wrap">
+      <svg class="bar-chart-svg" viewBox="0 0 ${svgWidth} ${svgHeight}" width="100%" height="100%">
+        <!-- Baseline -->
+        <line x1="8" y1="${chartHeight + 24}" x2="${svgWidth - 8}" y2="${chartHeight + 24}"
+              style="stroke: var(--border, rgba(255,255,255,0.12)); stroke-width: 1.5px;" />
+        ${rects}
+      </svg>
+    </div>
+  `;
+}
+
 async function loadSummary() {
   const data = await apiFetch(API.summary);
-  if (els.totalIncome) els.totalIncome.textContent = formatMoney(data.total_income);
-  if (els.totalExpense) els.totalExpense.textContent = formatMoney(data.total_expense);
+  if (els.totalIncome) {
+    els.totalIncome.textContent = formatMoney(data.total_income);
+    els.totalIncome.title = formatMoney(data.total_income);
+  }
+  if (els.totalExpense) {
+    els.totalExpense.textContent = formatMoney(data.total_expense);
+    els.totalExpense.title = formatMoney(data.total_expense);
+  }
   if (els.netBalance) {
     els.netBalance.textContent = formatMoney(data.net_balance);
+    els.netBalance.title = formatMoney(data.net_balance);
     els.netBalance.style.color = Number(data.net_balance) >= 0 ? "var(--income)" : "var(--expense)";
   }
-  if (els.custReceivables) els.custReceivables.textContent = formatMoney(data.customer_receivables || 0);
-  if (els.custPayables) els.custPayables.textContent = formatMoney(data.customer_payables || 0);
+  if (els.custReceivables) {
+    els.custReceivables.textContent = formatMoney(data.customer_receivables || 0);
+    els.custReceivables.title = formatMoney(data.customer_receivables || 0);
+  }
+  if (els.custPayables) {
+    els.custPayables.textContent = formatMoney(data.customer_payables || 0);
+    els.custPayables.title = formatMoney(data.customer_payables || 0);
+  }
+
+  // Render Bar Chart on Dashboard
+  const netBal = Number(data.net_balance || 0);
+  const barData = [
+    { label: "Revenue", value: Number(data.total_income || 0), color: "#10b981" },
+    { label: "Expenses", value: Number(data.total_expense || 0), color: "#f43f5e" },
+    {
+      label: netBal >= 0 ? "Profit" : "Loss",
+      value: Math.abs(netBal),
+      color: netBal >= 0 ? "#0ea5e9" : "#ef4444"
+    },
+    { label: "Due", value: Number(data.customer_receivables || 0), color: "#f59e0b" },
+  ];
+  renderDashBarChart("dashBarChartWrapper", barData);
+
+  // Render Donut Chart on Dashboard
+  const pieData = [
+    { label: "Revenue", value: Number(data.total_income || 0), color: "#10b981" },
+    { label: "Expenses", value: Number(data.total_expense || 0), color: "#f43f5e" },
+    { label: "Receivables", value: Number(data.customer_receivables || 0), color: "#f59e0b" },
+    { label: "Payables", value: Number(data.customer_payables || 0), color: "#6366f1" },
+  ];
+  renderDashPieChart("dashPieChartWrapper", pieData, "BALANCE", formatMoney(data.net_balance || 0));
 }
 
 async function loadCategories() {

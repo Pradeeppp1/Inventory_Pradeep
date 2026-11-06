@@ -1,311 +1,193 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register Account — Ecolith Enterprises</title>
-  {% load static %}
-  <!-- Google Fonts: Outfit -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="{% static 'finance/css/style.css' %}">
-  <script>
-    (function() {
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    })();
-  </script>
-  <style>
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 1.5rem;
-      background: radial-gradient(circle at top right, var(--bg-card), var(--bg-base));
-      position: relative;
-      overflow: hidden;
-    }
-    /* Decorative blur elements for background */
-    body::before, body::after {
-      content: '';
-      position: absolute;
-      width: 40vw;
-      height: 40vw;
-      border-radius: 50%;
-      background: var(--primary);
-      filter: blur(100px);
-      opacity: 0.1;
-      z-index: 0;
-      animation: float 20s infinite alternate;
-    }
-    body::before {
-      top: -10vw;
-      left: -10vw;
-    }
-    body::after {
-      bottom: -10vw;
-      right: -10vw;
-      background: #8b5cf6;
-      animation-delay: -10s;
-    }
-    @keyframes float {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(5vw, 5vw); }
-    }
-    .auth-card {
-      width: 100%;
-      max-width: 440px;
-      padding: 3rem 2.5rem;
-      border-radius: 24px;
-      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.4);
-      background: rgba(30, 41, 59, 0.6); /* fallback */
-      background: color-mix(in srgb, var(--bg-card) 60%, transparent);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      position: relative;
-      z-index: 1;
-      transform: translateY(0);
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
-    }
-    [data-theme="light"] .auth-card {
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid rgba(0, 0, 0, 0.05);
-      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.1);
-    }
-    .auth-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.5);
-    }
-    [data-theme="light"] .auth-card:hover {
-      box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.15);
-    }
-    .auth-brand {
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
-    .auth-brand img {
-      width: 64px;
-      height: 64px;
-      margin-bottom: 1rem;
-      filter: drop-shadow(0 8px 16px rgba(16, 185, 129, 0.3));
-      transition: transform 0.3s ease;
-    }
-    .auth-brand img:hover {
-      transform: scale(1.05) rotate(-5deg);
-    }
-    .auth-brand h1 {
-      margin: 0;
-      font-size: 1.75rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, var(--text-base), var(--text-muted));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .auth-brand p {
-      margin: 0.5rem 0 0;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      font-weight: 400;
-    }
-    .form-errors-box {
-      background: rgba(239, 68, 68, 0.1);
-      border-left: 4px solid #ef4444;
-      color: #ef4444;
-      padding: 1rem;
-      border-radius: 0 8px 8px 0;
-      font-size: 0.85rem;
-      margin-bottom: 1.5rem;
-      animation: slideIn 0.3s ease-out forwards;
-    }
-    [data-theme="dark"] .form-errors-box {
-      color: #fca5a5;
-    }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-10px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    .form-group {
-      margin-bottom: 1.25rem;
-      position: relative;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      transition: color 0.3s ease;
-    }
-    .form-group:focus-within label {
-      color: var(--primary);
-    }
-    .input-icon-wrapper {
-      position: relative;
-    }
-    .input-icon-wrapper i {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      font-size: 1rem;
-      transition: color 0.3s ease;
-    }
-    .form-group:focus-within .input-icon-wrapper i {
-      color: var(--primary);
-    }
-    .form-group input {
-      width: 100%;
-      padding: 0.8rem 1rem 0.8rem 2.75rem;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      color: var(--text-base);
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-    }
-    [data-theme="light"] .form-group input {
-      background: rgba(0, 0, 0, 0.02);
-      border: 1px solid rgba(0, 0, 0, 0.1);
-    }
-    .form-group input:focus {
-      outline: none;
-      background: rgba(255, 255, 255, 0.05);
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
-    }
-    [data-theme="light"] .form-group input:focus {
-      background: white;
-    }
-    .btn-submit {
-      width: 100%;
-      padding: 0.9rem;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 1rem;
-      letter-spacing: 0.5px;
-      background: linear-gradient(135deg, var(--primary), #059669);
-      color: white;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      transition: all 0.3s ease;
-      box-shadow: 0 10px 20px -10px rgba(16, 185, 129, 0.5);
-    }
-    .btn-submit:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 25px -10px rgba(16, 185, 129, 0.6);
-      background: linear-gradient(135deg, #059669, var(--primary));
-    }
-    .btn-submit:active {
-      transform: translateY(0);
-    }
-    .auth-footer {
-      text-align: center;
-      margin-top: 2rem;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 1.5rem;
-    }
-    [data-theme="light"] .auth-footer {
-      border-top: 1px solid rgba(0, 0, 0, 0.05);
-    }
-    .auth-footer a {
-      color: var(--primary);
-      font-weight: 600;
-      text-decoration: none;
-      transition: color 0.3s ease;
-    }
-    .auth-footer a:hover {
-      color: #34d399;
-      text-decoration: underline;
-    }
-  </style>
-</head>
-<body>
-  <div class="auth-card">
-    <div class="auth-brand">
-      <img src="{% static 'finance/images/logo.png' %}" alt="Ecolith Logo" onerror="this.src='https://ui-avatars.com/api/?name=EE&background=10b981&color=fff'">
-      <h1>Create an Account</h1>
-      <p>Join Ecolith Enterprises today.</p>
-    </div>
+{% extends "finance/auth_base.html" %}
+{% load static %}
+{% block title %}Create Staff Account — Ecolith Enterprises{% endblock %}
+{% block auth_content %}
 
-    {% if form.errors %}
-    <div class="form-errors-box">
-      <div style="font-weight: 600; margin-bottom: 0.25rem;"><i class="fa-solid fa-triangle-exclamation"></i> Action Required</div>
-      <ul style="margin: 0 0 0 1.25rem; padding: 0;">
-        {% for field in form %}
-          {% for error in field.errors %}
-            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
-          {% endfor %}
-        {% endfor %}
-        {% for error in form.non_field_errors %}
-          <li>{{ error }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-    {% endif %}
-
-    <form method="POST">
-      {% csrf_token %}
-      <div class="form-group">
-        <label for="id_username">Username</label>
-        <div class="input-icon-wrapper">
-          <i class="fa-solid fa-user"></i>
-          <input type="text" name="username" id="id_username" placeholder="Choose a unique username" required autofocus>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="id_password1">Password</label>
-        <div class="input-icon-wrapper">
-          <i class="fa-solid fa-lock"></i>
-          <input type="password" name="password1" id="id_password1" placeholder="Create strong password" required>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="id_password2">Confirm Password</label>
-        <div class="input-icon-wrapper">
-          <i class="fa-solid fa-shield-halved"></i>
-          <input type="password" name="password2" id="id_password2" placeholder="Repeat password" required>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="id_role">Role</label>
-        <div class="input-icon-wrapper">
-          <i class="fa-solid fa-briefcase"></i>
-          <select name="role" id="id_role" required style="width: 100%; padding: 0.8rem 1rem 0.8rem 2.75rem; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; color: var(--text-base); font-family: 'Outfit', sans-serif; font-size: 0.95rem; transition: all 0.3s ease; appearance: none;">
-            <option value="" disabled selected style="color: black;">Select a role...</option>
-            <option value="admin" style="color: black;">Admin</option>
-            <option value="manager" style="color: black;">Manager</option>
-            <option value="staff" style="color: black;">Staff</option>
-          </select>
-        </div>
-      </div>
-
-      <div style="margin-top: 2rem;">
-        <button type="submit" class="btn-submit">
-          <i class="fa-solid fa-user-plus"></i> Register Account
-        </button>
-      </div>
-    </form>
-
-    <div class="auth-footer">
-      Already have an account? <a href="{% url 'login' %}">Sign In</a>
-    </div>
+  <div style="margin-bottom: 1.5rem;">
+    <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text); margin: 0 0 0.45rem; letter-spacing: -0.03em;">
+      Create Staff Account
+    </h1>
+    <p style="color: var(--text-muted); font-size: 0.92rem; margin: 0; line-height: 1.5;">
+      Register your employee profile for administrator approval &amp; workstation access.
+    </p>
   </div>
-</body>
-</html>
+
+  {% if error %}
+  <div class="alert-error" role="alert" style="margin-bottom: 1.25rem; border-radius: 10px; padding: 0.85rem 1rem;">
+    <i class="fa-solid fa-circle-exclamation"></i>
+    <span>{{ error }}</span>
+  </div>
+  {% endif %}
+
+  {% if form.errors %}
+  <div class="alert-error" role="alert" style="margin-bottom: 1.25rem; border-radius: 10px; padding: 0.85rem 1rem;">
+    <i class="fa-solid fa-circle-exclamation" style="flex-shrink: 0; margin-top: 2px;"></i>
+    <ul class="error-list" style="margin: 0; padding-left: 1.1rem; font-size: 0.85rem;">
+      {% for field in form %}
+        {% for err in field.errors %}
+          <li><strong>{{ field.label }}:</strong> {{ err }}</li>
+        {% endfor %}
+      {% endfor %}
+      {% for err in form.non_field_errors %}
+        <li>{{ err }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <form method="post" action="{% url 'register' %}" autocomplete="on" style="display: flex; flex-direction: column; gap: 1.1rem;">
+    {% csrf_token %}
+
+    <!-- Row 1: Full Name & Staff No -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div>
+        <label for="id_full_name" style="display: block; font-size: 0.86rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem;">
+          Full Name <span style="color: #f43f5e;">*</span>
+        </label>
+        <input type="text" name="full_name" id="id_full_name" required autofocus
+               value="{{ form.full_name.value|default:'' }}"
+               placeholder="e.g. Ramesh Karki"
+               style="height: 46px; width: 100%; padding: 0 1rem; font-size: 0.9rem; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text);">
+      </div>
+
+      <div>
+        <label for="id_staff_number" style="display: block; font-size: 0.86rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem;">
+          Staff No. / ID <span style="color: #f43f5e;">*</span>
+        </label>
+        <input type="text" name="staff_number" id="id_staff_number" required maxlength="25"
+               value="{{ form.staff_number.value|default:'' }}"
+               placeholder="e.g. STF-014"
+               style="height: 46px; width: 100%; padding: 0 1rem; font-size: 0.9rem; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text);">
+      </div>
+    </div>
+
+    <!-- Row 2: Gmail & Mobile Phone -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div>
+        <label for="id_email" style="display: block; font-size: 0.86rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem;">
+          Gmail / Email <span style="color: #f43f5e;">*</span>
+        </label>
+        <input type="email" name="email" id="id_email" required
+               value="{{ form.email.value|default:'' }}"
+               placeholder="e.g. ramesh@gmail.com"
+               style="height: 46px; width: 100%; padding: 0 1rem; font-size: 0.9rem; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text);">
+      </div>
+
+      <div>
+        <label for="id_phone" style="display: block; font-size: 0.86rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem;">
+          Mobile Phone
+        </label>
+        <input type="tel" name="phone" id="id_phone"
+               value="{{ form.phone.value|default:'' }}"
+               placeholder="e.g. 9801234567"
+               style="height: 46px; width: 100%; padding: 0 1rem; font-size: 0.9rem; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text);">
+      </div>
+    </div>
+
+    <!-- Row 3: Account Username -->
+    <div>
+      <label for="id_username" style="display: block; font-size: 0.86rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem;">
+        Account Username <span style="color: #f43f5e;">*</span>
+      </label>
+      <input type="text" name="username" id="id_username" required
+             maxlength="32" minlength="3" pattern="[A-Za-z0-9._-]+"
+             value="{{ form.username.value|default:'' }}"
+             placeholder="Choose a username (e.g. ramesh.karki)"
+             style="height: 46px; width: 100%; padding: 0 1rem; font-size: 0.9rem; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text);">
+    </div>
+
+    <!-- Row 4: Job Role -->
+    <div>
+      <label for="id_requested_role" style="display: block; font-size: 0.86rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem;">
+        Job Role / Department <span style="color: #f43f5e;">*</span>
+      </label>
+      <select name="requested_role" id="id_requested_role" required
+              style="height: 46px; width: 100%; padding: 0 1rem; font-size: 0.9rem; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text);">
+        <option value="salesman" {% if form.requested_role.value == 'salesman' or not form.requested_role.value %}selected{% endif %}>
+          🏷️ Salesperson — Sales Bills, POS &amp; Customers
+        </option>
+        <option value="accountant" {% if form.requested_role.value == 'accountant' %}selected{% endif %}>
+          📊 Accountant — Expenses, Customer Ledgers &amp; Invoices
+        </option>
+        <option value="receptionist" {% if form.requested_role.value == 'receptionist' %}selected{% endif %}>
+          🛎️ Receptionist — Front Desk &amp; Billing
+        </option>
+        <option value="staff" {% if form.requested_role.value == 'staff' %}selected{% endif %}>
+          👤 General Staff — Daily Operations
+        </option>
+        <option value="manager" {% if form.requested_role.value == 'manager' %}selected{% endif %}>
+          👔 Manager — Sales, Inventory &amp; Financial Reports
+        </option>
+        <option value="admin" {% if form.requested_role.value == 'admin' %}selected{% endif %}>
+          🛡️ Admin — Full System &amp; Staff Access Control
+        </option>
+      </select>
+    </div>
+
+    <!-- Row 5: Passwords -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div>
+        <label for="id_password1" style="display: block; font-size: 0.86rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem;">
+          Password <span style="color: #f43f5e;">*</span>
+        </label>
+        <div style="position: relative;">
+          <input type="password" name="password1" id="id_password1"
+                 autocomplete="new-password" required minlength="8"
+                 placeholder="Min. 8 characters"
+                 style="height: 46px; width: 100%; padding: 0 2.4rem 0 1rem; font-size: 0.9rem; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text);">
+          <button type="button" onclick="togglePwd('id_password1', this)" aria-label="Toggle password visibility"
+                  style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.88rem; padding: 0.25rem;">
+            <i class="fa-regular fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <label for="id_password2" style="display: block; font-size: 0.86rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem;">
+          Confirm Password <span style="color: #f43f5e;">*</span>
+        </label>
+        <div style="position: relative;">
+          <input type="password" name="password2" id="id_password2"
+                 autocomplete="new-password" required minlength="8"
+                 placeholder="Re-enter password"
+                 style="height: 46px; width: 100%; padding: 0 2.4rem 0 1rem; font-size: 0.9rem; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text);">
+          <button type="button" onclick="togglePwd('id_password2', this)" aria-label="Toggle password visibility"
+                  style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.88rem; padding: 0.25rem;">
+            <i class="fa-regular fa-eye"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Verification Info Notice -->
+    <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 0.75rem 0.9rem; font-size: 0.82rem; color: var(--primary); display: flex; align-items: center; gap: 0.6rem;">
+      <i class="fa-solid fa-circle-info" style="font-size: 1rem; flex-shrink: 0;"></i>
+      <span>Admin approval is required before logging into the workstation.</span>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn--primary btn--block btn--glow"
+            style="height: 48px; font-size: 0.96rem; font-weight: 700; display: flex; justify-content: center; align-items: center; gap: 0.6rem; border-radius: 10px; margin-top: 0.25rem;">
+      <i class="fa-solid fa-user-check"></i> Register Account
+    </button>
+  </form>
+
+  <!-- Switcher to login -->
+  <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border); text-align: center; font-size: 0.88rem; color: var(--text-muted);">
+    Already have an account? <a href="{% url 'login' %}" style="color: var(--primary); font-weight: 700; text-decoration: none;">Sign in</a>
+  </div>
+
+  <script>
+    function togglePwd(id, btn) {
+      var inp = document.getElementById(id);
+      var icon = btn.querySelector('i');
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        icon.className = 'fa-regular fa-eye-slash';
+      } else {
+        inp.type = 'password';
+        icon.className = 'fa-regular fa-eye';
+      }
+    }
+  </script>
+{% endblock %}

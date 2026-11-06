@@ -1,147 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pending Approval — Ecolith Enterprises</title>
-  {% load static %}
-  <!-- Google Fonts: Outfit -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="{% static 'finance/css/style.css' %}">
-  <script>
-    (function() {
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    })();
-  </script>
-  <style>
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 1.5rem;
-      background: radial-gradient(circle at top right, var(--bg-card), var(--bg-base));
-      position: relative;
-      overflow: hidden;
-    }
-    /* Decorative blur elements for background */
-    body::before, body::after {
-      content: '';
-      position: absolute;
-      width: 40vw;
-      height: 40vw;
-      border-radius: 50%;
-      background: var(--primary);
-      filter: blur(100px);
-      opacity: 0.1;
-      z-index: 0;
-      animation: float 20s infinite alternate;
-    }
-    body::before {
-      top: -10vw;
-      left: -10vw;
-    }
-    body::after {
-      bottom: -10vw;
-      right: -10vw;
-      background: #8b5cf6;
-      animation-delay: -10s;
-    }
-    @keyframes float {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(5vw, 5vw); }
-    }
-    .auth-card {
-      width: 100%;
-      max-width: 440px;
-      padding: 3rem 2.5rem;
-      border-radius: 24px;
-      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.4);
-      background: rgba(30, 41, 59, 0.6); /* fallback */
-      background: color-mix(in srgb, var(--bg-card) 60%, transparent);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      position: relative;
-      z-index: 1;
-      text-align: center;
-    }
-    [data-theme="light"] .auth-card {
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid rgba(0, 0, 0, 0.05);
-      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.1);
-    }
-    .auth-brand img {
-      width: 64px;
-      height: 64px;
-      margin-bottom: 1.5rem;
-      filter: drop-shadow(0 8px 16px rgba(16, 185, 129, 0.3));
-    }
-    .auth-brand h1 {
-      margin: 0 0 1rem;
-      font-size: 1.75rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--text-base), var(--text-muted));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .auth-brand p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin-bottom: 2rem;
-    }
-    .status-icon {
-      font-size: 3.5rem;
-      color: var(--primary);
-      margin-bottom: 1.5rem;
-      opacity: 0.8;
-      animation: pulse 2s infinite ease-in-out;
-    }
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 0.8; }
-      50% { transform: scale(1.1); opacity: 1; }
-      100% { transform: scale(1); opacity: 0.8; }
-    }
-    .btn-submit {
-      width: 100%;
-      padding: 0.9rem;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 1rem;
-      background: var(--surface-2);
-      color: var(--text-base);
-      border: 1px solid var(--border);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      transition: all 0.3s ease;
-      text-decoration: none;
-    }
-    .btn-submit:hover {
-      background: var(--surface-3);
-    }
-  </style>
-</head>
-<body>
-  <div class="auth-card">
-    <div class="auth-brand">
-      <img src="{% static 'finance/images/logo.png' %}" alt="Ecolith Logo" onerror="this.src='https://ui-avatars.com/api/?name=EE&background=10b981&color=fff'">
-      <i class="fa-solid fa-hourglass-half status-icon"></i>
-      <h1>Account Pending</h1>
-      <p>Your account has been created successfully, but it requires administrator approval before you can access the dashboard. Please check back later.</p>
+{% extends "finance/auth_base.html" %}
+{% load static %}
+{% block title %}Awaiting approval — Ecolith Enterprises{% endblock %}
+{% block auth_content %}
+
+  <div style="text-align:center;">
+    <div style="width:72px;height:72px;border-radius:50%;background:var(--amber-bg);color:var(--amber);
+                display:inline-flex;align-items:center;justify-content:center;
+                font-size:1.8rem;margin-bottom:1.5rem;
+                border:1px solid rgba(245,158,11,0.25);">
+      <i class="fa-solid fa-clock"></i>
+    </div>
+    <h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:0.5rem;">
+      Awaiting approval
+    </h1>
+    <p style="color:var(--text-muted);font-size:0.9rem;line-height:1.65;margin-bottom:2rem;">
+      Your account has been created successfully.<br>
+      An administrator must approve your access before you can use the workspace.<br>
+      Please check back later or contact your administrator.
+    </p>
+
+    <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:12px;
+                padding:1rem 1.25rem;margin-bottom:1.75rem;text-align:left;">
+      <div style="display:flex;align-items:center;gap:0.6rem;font-size:0.84rem;color:var(--text-muted);">
+        <i class="fa-solid fa-circle-info" style="color:var(--primary);"></i>
+        Your request is in the admin queue. You'll be able to log in once approved.
+      </div>
     </div>
 
-    <a href="{% url 'logout' %}" class="btn-submit">
-      <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
-    </a>
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn--ghost btn--block">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign out
+      </button>
+    </form>
   </div>
-</body>
-</html>
+
+{% endblock %}

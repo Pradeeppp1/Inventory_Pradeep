@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="same-origin">
+  <title>{% block title %}Ecolith Enterprises{% endblock %}</title>
+  {% load static %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="icon" type="image/png" href="{% static 'finance/images/logo.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'finance/images/logo.png' %}">
+  <link rel="stylesheet" href="{% static 'finance/css/style.css' %}?v={% now 'U' %}">
+  <script src="{% static 'finance/js/theme-boot.js' %}"></script>
+</head>
+<body class="auth-body">
+
+  <!-- Left decorative panel (50% space on desktop) -->
+  <aside class="auth-panel">
+    <div class="auth-panel__content">
+      <div class="auth-logo-brand" style="margin-bottom:1.25rem;">
+        <img src="{% static 'finance/images/logo.png' %}" alt="Ecolith" class="auth-panel__logo"
+             onerror="this.parentElement.innerHTML='<div style=\'width:68px;height:68px;background:linear-gradient(135deg,var(--primary),#059669);border-radius:18px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:1.9rem;box-shadow:0 8px 24px rgba(16,185,129,0.4);border:1px solid rgba(255,255,255,0.2);\'><i class=\'fa-solid fa-leaf\'></i></div>'">
+      </div>
+      <p class="auth-panel__title">Ecolith Enterprises</p>
+      <p class="auth-panel__sub">
+        A complete business management suite — built for clarity, speed, and total control of your enterprise finances.
+      </p>
+    </div>
+
+    <div class="auth-panel__features">
+      <div class="auth-feat">
+        <i class="fa-solid fa-chart-line"></i>
+        <div>
+          <div style="font-weight:600;color:#fff;font-size:0.92rem;">Real-time Financial Analytics</div>
+          <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:2px;">Instant income, expense, and profit metrics</div>
+        </div>
+      </div>
+      <div class="auth-feat">
+        <i class="fa-solid fa-boxes-stacked"></i>
+        <div>
+          <div style="font-weight:600;color:#fff;font-size:0.92rem;">Smart Inventory Management</div>
+          <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:2px;">Live stock alerts, automated low-stock warnings</div>
+        </div>
+      </div>
+      <div class="auth-feat">
+        <i class="fa-solid fa-users"></i>
+        <div>
+          <div style="font-weight:600;color:#fff;font-size:0.92rem;">Customer Ledger & Receivables</div>
+          <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:2px;">Party balances, credit history & partial payments</div>
+        </div>
+      </div>
+      <div class="auth-feat">
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+        <div>
+          <div style="font-weight:600;color:#fff;font-size:0.92rem;">Nepali VAT & Estimate Invoicing</div>
+          <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:2px;">IRD Schedule-5 tax invoices & quotation billing</div>
+        </div>
+      </div>
+      <div class="auth-feat">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div>
+          <div style="font-weight:600;color:#fff;font-size:0.92rem;">Secure Role-Based Workstations</div>
+          <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:2px;">Salesperson, Accountant, Manager & Admin tiers</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:relative;z-index:1;display:flex;align-items:center;gap:1rem;color:rgba(255,255,255,0.45);font-size:0.78rem;text-align:center;justify-content:center;flex-wrap:wrap;">
+      <span><i class="fa-solid fa-shield-check" style="color:var(--primary);margin-right:0.3rem;"></i> 256-bit Encrypted</span>
+      <span>•</span>
+      <span><i class="fa-solid fa-certificate" style="color:var(--cyan);margin-right:0.3rem;"></i> IRD Compliant</span>
+      <span>•</span>
+      <span>Ecolith v2.4 Enterprise</span>
+    </div>
+  </aside>
+
+  <!-- Right form panel -->
+  <div class="auth-form-wrap">
+    <main class="auth-card">
+      {% block auth_content %}{% endblock %}
+    </main>
+  </div>
+
+</body>
+</html>

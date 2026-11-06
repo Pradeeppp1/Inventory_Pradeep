@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Bills — Ecolith Enterprises</title>
+  {% load static %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'finance/css/style.css' %}">
+  <script src="{% static 'finance/js/theme-boot.js' %}"></script>
+  <style>
+    /* ── Items table ── */
+    .items-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+    .items-table th {
+      font-size: 0.69rem; font-weight: 700; color: var(--text-dim);
+      text-align: left; padding: 0.5rem 0.45rem;
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      background: var(--surface-2);
+      white-space: nowrap;
+    }
+    .items-table td { padding: 0.4rem 0.35rem; vertical-align: middle; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .items-table tbody tr:last-child td { border-bottom: none; }
+    .items-table td input,
+    .items-table td select {
+      width: 100%; padding: 0.42rem 0.5rem;
+      background: var(--surface-3); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text);
+      font-family: inherit; font-size: 0.82rem;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .items-table td input:focus,
+    .items-table td select:focus {
+      outline: none; border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-glow);
+    }
+    .col-item  { min-width: 155px; }
+    .col-hsn   { width: 82px; }
+    .col-qty   { width: 66px; }
+    .col-price { width: 105px; }
+    .col-total { width: 100px; }
+    .col-rm    { width: 34px; text-align: center; }
+    .line-total-display { font-weight: 700; color: var(--income); font-size: 0.84rem; padding: 0.35rem 0.4rem; display: block; white-space: nowrap; }
+    .btn--rm {
+      background: rgba(244,63,94,0.10); border: 1px solid rgba(244,63,94,0.25);
+      color: #f43f5e; border-radius: 6px; width: 28px; height: 28px;
+      cursor: pointer; font-size: 0.82rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .btn--rm:hover { background: #f43f5e; color: #fff; border-color: #f43f5e; }
+
+    /* ── Totals box ── */
+    .totals-box {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1rem 1.25rem;
+      margin-top: 1rem; display: flex; flex-direction: column; gap: 0.45rem;
+    }
+    .totals-box .trow { display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; }
+    .totals-box .trow.grand {
+      font-size: 1.05rem; font-weight: 700; color: var(--income);
+      border-top: 1px solid var(--border); padding-top: 0.6rem; margin-top: 0.3rem;
+    }
+    .totals-box .trow label { color: var(--text-muted); font-weight: 500; }
+    .totals-box .trow span  { font-weight: 600; }
+    .discount-row { display: flex; gap: 0.5rem; align-items: center; }
+    .discount-row input  { flex: 1; padding: 0.4rem 0.6rem; background: var(--surface-3); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: inherit; font-size: 0.85rem; }
+    .discount-row select { width: 78px; padding: 0.4rem 0.35rem; background: var(--surface-3); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: inherit; font-size: 0.85rem; }
+
+    /* ── Modal section headers ── */
+    .form-section { margin-bottom: 1.5rem; }
+    .form-section-header {
+      display: flex; align-items: center; gap: 0.55rem;
+      font-size: 0.69rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.09em;
+      color: var(--text-dim);
+      margin-bottom: 1rem;
+      padding-bottom: 0.55rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .form-section-header i { color: var(--primary); font-size: 0.8rem; }
+
+    /* ── Bill number hint ── */
+    .bill-number-hint { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.3rem; display: block; }
+
+    /* ── PAN badge hint ── */
+    .optional-badge {
+      font-size: 0.65rem; font-weight: 600; padding: 0.1rem 0.4rem;
+      border-radius: 4px; background: var(--surface-3);
+      color: var(--text-dim); letter-spacing: 0.04em; text-transform: uppercase;
+      margin-left: 0.4rem; vertical-align: middle;
+    }
+
+    /* ── View modal ── */
+    .bill-view .bill-header-row { display: flex; justify-content: space-between; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
+    .bill-view .bill-meta { font-size: 0.82rem; color: var(--text-muted); line-height: 1.85; }
+    .bill-view .bill-number-badge { font-size: 1.4rem; font-weight: 800; color: var(--primary); letter-spacing: 0.5px; }
+    .bill-view table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.85rem; }
+    .bill-view table th {
+      font-size: 0.69rem; color: var(--text-dim); font-weight: 700;
+      border-bottom: 1px solid var(--border); padding: 0.5rem 0.5rem;
+      text-align: left; text-transform: uppercase; letter-spacing: 0.06em;
+      background: var(--surface-2);
+    }
+    .bill-view table td { padding: 0.6rem 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .bill-view table td:last-child { text-align: right; font-weight: 600; }
+    .bill-view .view-totals { text-align: right; margin-top: 0.5rem; }
+    .bill-view .view-totals .vrow { display: flex; justify-content: flex-end; gap: 2.5rem; font-size: 0.88rem; margin-bottom: 0.35rem; }
+    .bill-view .view-totals .vrow label { color: var(--text-muted); }
+    .bill-view .view-totals .vrow.grand { font-size: 1.05rem; font-weight: 700; color: var(--income); border-top: 1px solid var(--border); padding-top: 0.5rem; margin-top: 0.25rem; }
+    .bill-meta-chip {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 0.25rem 0.65rem;
+      font-size: 0.78rem; color: var(--text-muted); margin-right: 0.4rem; margin-bottom: 0.35rem;
+    }
+    .bill-meta-chip i { color: var(--primary); font-size: 0.75rem; }
+    .bill-meta-chip strong { color: var(--text); }
+
+    /* ── Status badges ── */
+    .badge--cash   { background: rgba(34,197,94,0.15);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+    .badge--credit { background: rgba(244,63,94,0.12);  color: #f43f5e; border: 1px solid rgba(244,63,94,0.3); }
+    .badge--online { background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
+    .badge--cancelled { background: rgba(107,114,128,0.15); color: #9ca3af; border: 1px solid rgba(107,114,128,0.3); font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 0.3rem; }
+    .badge--active { background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.3); font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 4px; }
+
+    /* ── Cancelled row / cancel reason ── */
+    tr.bill-cancelled td { opacity: 0.55; }
+    tr.bill-cancelled td:first-child strong { text-decoration: line-through; }
+    .cancel-reason-box { margin-top: 0.75rem; background: rgba(244,63,94,0.07); border: 1px solid rgba(244,63,94,0.2); border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.82rem; color: #f43f5e; }
+    .cancel-reason-box strong { display: block; margin-bottom: 0.2rem; }
+
+    /* ── Filter toggle ── */
+    .toggle-cancelled-wrap { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--text-muted); cursor: pointer; }
+    .toggle-cancelled-wrap input { accent-color: var(--primary); width: 14px; height: 14px; }
+
+    /* ── Print Choice Cards ── */
+    .print-choice-card:hover {
+      border-color: var(--primary) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+
+    /* ── Print ── */
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: fixed; inset: 0; background: #fff; color: #000; padding: 2rem; display: block !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    {% include "finance/partials/header.html" %}
+
+    <!-- Summary -->
+    <section class="summary">
+      <article class="card card--income glass">
+        <div class="card__icon"><i class="fa-solid fa-file-invoice"></i></div>
+        <div class="card__content">
+          <span class="card__label">Active Bills</span>
+          <span class="card__value" id="sbTotalBills">0</span>
+        </div>
+      </article>
+      <article class="card card--balance glass">
+        <div class="card__icon"><i class="fa-solid fa-sack-dollar"></i></div>
+        <div class="card__content">
+          <span class="card__label">Total Revenue</span>
+          <span class="card__value" id="sbTotalRevenue">NPR 0</span>
+        </div>
+      </article>
+      <article class="card card--expense glass">
+        <div class="card__icon"><i class="fa-solid fa-clock"></i></div>
+        <div class="card__content">
+          <span class="card__label">Credit Pending</span>
+          <span class="card__value" id="sbCreditPending">NPR 0</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- Filters -->
+    <section class="filters glass">
+      <div class="filters__group">
+        <label for="sbFilterCustomer">Customer</label>
+        <select id="sbFilterCustomer"><option value="">All Customers</option></select>
+      </div>
+      <div class="filters__group">
+        <label for="sbFilterPayment">Payment Mode</label>
+        <select id="sbFilterPayment">
+          <option value="">All Modes</option>
+          <option value="cash">Cash</option>
+          <option value="credit">Credit</option>
+          <option value="online">Online</option>
+        </select>
+      </div>
+      <div class="filters__group">
+        <label for="sbFilterFrom">From Date</label>
+        <input type="date" id="sbFilterFrom">
+      </div>
+      <div class="filters__group">
+        <label for="sbFilterTo">To Date</label>
+        <input type="date" id="sbFilterTo">
+      </div>
+      <label class="toggle-cancelled-wrap" title="Show cancelled bills in the list">
+        <input type="checkbox" id="sbShowCancelled"> Show Cancelled
+      </label>
+      <button type="button" class="btn btn--primary btn--glow" id="sbNewBillBtn">
+        <i class="fa-solid fa-plus"></i> New Sales Bill
+      </button>
+    </section>
+
+    <!-- Bills Table -->
+    <section class="table-section glass">
+      <div class="table-section__header">
+        <h2><i class="fa-solid fa-file-invoice"></i> Sales Bills</h2>
+        <span class="table-section__count" id="sbRecordCount">0 bills</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Bill #</th>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Items</th>
+              <th>Payment</th>
+              <th>Status</th>
+              <th class="text-right">Grand Total</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="sbBody">
+            <tr><td colspan="8" class="empty-state">Loading bills...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       NEW / CREATE BILL MODAL
+  ══════════════════════════════════════════════ -->
+  <div class="modal" id="sbModal" aria-hidden="true">
+    <div class="modal__backdrop" data-close-sb-modal></div>
+    <div class="modal__dialog" role="dialog" style="max-width:920px;">
+      <div class="modal__header">
+        <h2>
+          <i class="fa-solid fa-file-invoice" style="color:var(--primary);"></i>
+          New Sales Bill
+        </h2>
+        <button type="button" class="modal__close" data-close-sb-modal aria-label="Close">&times;</button>
+      </div>
+
+      <form id="sbForm">
+
+        <!-- ── Section 1: Bill Info ─────────────────────── -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <i class="fa-solid fa-hashtag"></i> Bill Information
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="sbBillNumber">Bill Number</label>
+              <input type="text" id="sbBillNumber"
+                     placeholder="e.g. BILL-0012" maxlength="30"
+                     style="font-weight:700;letter-spacing:0.5px;color:var(--primary);">
+              <span class="bill-number-hint">
+                <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--primary);"></i>
+                Leave blank to auto-generate (e.g. BILL-0067)
+              </span>
+            </div>
+            <div class="form-group">
+              <label for="sbDateBsYear">
+                Invoice Date (BS)
+                <span style="color:#f43f5e;margin-left:2px;">*</span>
+              </label>
+              <!-- Hidden AD date sent to server -->
+              <input type="hidden" id="sbDate">
+              <div style="display:flex;gap:0.4rem;align-items:center;">
+                <select id="sbDateBsYear" style="flex:1.4;padding:0.48rem 0.5rem;background:var(--surface-3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:0.85rem;" required></select>
+                <select id="sbDateBsMonth" style="flex:1.2;padding:0.48rem 0.5rem;background:var(--surface-3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:0.85rem;" required></select>
+                <select id="sbDateBsDay" style="flex:0.9;padding:0.48rem 0.5rem;background:var(--surface-3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:0.85rem;" required></select>
+              </div>
+              <span class="bill-number-hint" id="sbDateAdHint" style="color:var(--text-dim);"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Section 2: Customer Details ─────────────── -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <i class="fa-solid fa-user"></i> Customer Details
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="flex:1.5;">
+              <label for="sbCustomer">
+                Customer
+                <span style="color:#f43f5e;margin-left:2px;">*</span>
+              </label>
+              <select id="sbCustomer" required><option value="">— Select Customer —</option></select>
+              <button type="button" id="sbNewCustToggle"
+                      style="margin-top:0.45rem;background:none;border:none;color:var(--primary);font-size:0.78rem;cursor:pointer;padding:0;font-family:inherit;display:inline-flex;align-items:center;gap:0.35rem;">
+                <i class="fa-solid fa-user-plus"></i> Add new customer instead
+              </button>
+            </div>
+            <div class="form-group">
+              <label for="sbCustomerPan">
+                Customer PAN / VAT No.
+                <span class="optional-badge">optional</span>
+              </label>
+              <input type="text" id="sbCustomerPan"
+                     placeholder="e.g. 623351804"
+                     maxlength="20"
+                     pattern="[0-9A-Za-z-]*"
+                     title="Enter the customer's PAN or VAT registration number">
+              <span class="bill-number-hint">
+                <i class="fa-solid fa-circle-info" style="color:var(--primary);"></i>
+                Printed on the कर बिजक (VAT invoice)
+              </span>
+            </div>
+            <div class="form-group">
+              <label for="sbPaymentMode">Payment Mode</label>
+              <select id="sbPaymentMode">
+                <option value="cash">Cash</option>
+                <option value="credit">Credit (Udhari)</option>
+                <option value="online">Online / Cheque</option>
+                <option value="mixed">Mixed (Partial)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Billing Address -->
+          <div class="form-row">
+            <div class="form-group" style="flex:1;">
+              <label for="sbBillingAddress">
+                Billing / Delivery Address
+                <span class="optional-badge">optional</span>
+              </label>
+              <textarea id="sbBillingAddress" rows="2"
+                        placeholder="e.g. Kathmandu, Baneshwor — Ward 32, near KFC"
+                        style="resize:vertical;"></textarea>
+            </div>
+          </div>
+
+          <!-- New Customer inline fields (hidden by default) -->
+          <div id="sbNewCustSection"
+               style="display:none;background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2);border-radius:10px;padding:1rem 1.1rem;margin-top:0.5rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+              <p style="margin:0;font-size:0.85rem;font-weight:600;color:var(--primary);">
+                <i class="fa-solid fa-user-plus"></i> New Customer Details
+              </p>
+              <button type="button" id="sbCancelNewCust"
+                      style="background:none;border:none;color:var(--text-muted);font-size:0.78rem;cursor:pointer;font-family:inherit;">
+                ✕ Use existing customer
+              </button>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="sbNewCustName">Name <span style="color:#f43f5e;">*</span></label>
+                <input type="text" id="sbNewCustName" placeholder="e.g. Diwas Garage">
+              </div>
+              <div class="form-group">
+                <label for="sbNewCustPhone">Phone</label>
+                <input type="tel" id="sbNewCustPhone" placeholder="e.g. 9800000000">
+              </div>
+              <div class="form-group">
+                <label for="sbNewCustType">Account Type</label>
+                <select id="sbNewCustType">
+                  <option value="retail">Retail</option>
+                  <option value="wholesale">Wholesale</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Section 3: Line Items ────────────────────── -->
+        <div class="form-section">
+          <div class="form-section-header" style="justify-content:space-between;">
+            <span style="display:flex;align-items:center;gap:0.55rem;">
+              <i class="fa-solid fa-list-check"></i> Line Items
+            </span>
+            <button type="button" class="btn btn--ghost" id="sbAddRowBtn"
+                    style="padding:0.3rem 0.75rem;font-size:0.78rem;">
+              <i class="fa-solid fa-plus"></i> Add Item
+            </button>
+          </div>
+          <div style="overflow-x:auto;border-radius:8px;border:1px solid var(--border);">
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th class="col-item">Item / Description</th>
+                  <th class="col-hsn">HSN Code</th>
+                  <th class="col-qty">Qty</th>
+                  <th class="col-price">Unit Price (NPR)</th>
+                  <th class="col-total">Line Total</th>
+                  <th class="col-rm"></th>
+                </tr>
+              </thead>
+              <tbody id="sbItemsBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── Section 4: Totals, Payment & Notes ───────── -->
+        <div class="form-section" style="margin-bottom:0;">
+          <div class="form-section-header">
+            <i class="fa-solid fa-calculator"></i> Totals &amp; Payment
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start;">
+            <!-- Notes -->
+            <div class="form-group" style="margin-bottom:0;">
+              <label for="sbNotes">
+                Notes / Remarks
+                <span class="optional-badge">optional</span>
+              </label>
+              <textarea id="sbNotes" rows="3"
+                        placeholder="Voucher #, delivery notes, warranty info, etc."
+                        style="resize:vertical;"></textarea>
+            </div>
+
+            <!-- Totals + Partial Payment -->
+            <div class="totals-box">
+              <div class="trow">
+                <label>Subtotal</label>
+                <span id="sbSubtotalDisplay">NPR 0</span>
+              </div>
+              <div class="trow" style="gap:1rem;">
+                <label>Discount</label>
+                <div class="discount-row" style="width:210px;">
+                  <input type="number" id="sbDiscount" min="0" step="0.01" placeholder="0" value="0">
+                  <select id="sbDiscountType">
+                    <option value="amount">NPR</option>
+                    <option value="percent">%</option>
+                  </select>
+                </div>
+              </div>
+              <div class="trow grand">
+                <label>Grand Total</label>
+                <span id="sbGrandTotalDisplay">NPR 0</span>
+              </div>
+              <!-- Partial payment row -->
+              <div class="trow" style="gap:1rem;margin-top:0.4rem;border-top:1px dashed var(--border);padding-top:0.6rem;" id="sbAmountPaidRow">
+                <label style="color:var(--income);font-weight:600;">
+                  <i class="fa-solid fa-money-bill-wave" style="font-size:0.78rem;"></i> Amount Paid (NPR)
+                </label>
+                <input type="number" id="sbAmountPaid" min="0" step="0.01" placeholder="0" value="0"
+                       style="width:130px;padding:0.35rem 0.55rem;background:var(--surface-3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:0.85rem;text-align:right;">
+              </div>
+              <div class="trow" style="color:#f43f5e;font-weight:700;" id="sbBalanceDueRow">
+                <label style="color:#f43f5e;">Balance Due</label>
+                <span id="sbBalanceDueDisplay">NPR 0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="form-error" id="sbFormError" hidden></p>
+
+        <div class="modal__actions">
+          <button type="button" class="btn btn--ghost" data-close-sb-modal>
+            <i class="fa-solid fa-xmark"></i> Cancel
+          </button>
+          <button type="submit" class="btn btn--primary btn--glow" id="sbSaveBtn">
+            <i class="fa-solid fa-check"></i> Save Bill
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       VIEW BILL MODAL
+  ══════════════════════════════════════════════ -->
+  <div class="modal" id="sbViewModal" aria-hidden="true">
+    <div class="modal__backdrop" data-close-view-modal></div>
+    <div class="modal__dialog" role="dialog" style="max-width:740px;">
+      <div class="modal__header">
+        <h2><i class="fa-solid fa-eye" style="color:var(--primary);"></i> Bill Details</h2>
+        <button type="button" class="modal__close" data-close-view-modal>&times;</button>
+      </div>
+      <div id="sbViewContent" class="bill-view"></div>
+      <div class="modal__actions" id="sbViewActions">
+        <button type="button" class="btn btn--ghost" data-close-view-modal>Close</button>
+        <button type="button" class="btn btn--primary" id="sbViewUpdatePayBtn">
+          <i class="fa-solid fa-money-bill-transfer"></i> Update Payment
+        </button>
+        <button type="button" class="btn btn--primary btn--glow" id="sbPrintBtn">
+          <i class="fa-solid fa-print"></i> Print / PDF
+        </button>
+        <button type="button" class="btn btn--danger" id="sbCancelBillBtn"
+                style="background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.4);color:#f59e0b;">
+          <i class="fa-solid fa-ban"></i> Cancel Bill
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       UPDATE PAYMENT MODAL
+  ══════════════════════════════════════════════ -->
+  <div class="modal" id="sbPaymentModal" aria-hidden="true">
+    <div class="modal__backdrop" data-close-pay-modal></div>
+    <div class="modal__dialog" role="dialog" style="max-width:520px;">
+      <div class="modal__header">
+        <h2>
+          <i class="fa-solid fa-money-bill-transfer" style="color:var(--primary);"></i>
+          Update Payment / Method
+        </h2>
+        <button type="button" class="modal__close" data-close-pay-modal aria-label="Close">&times;</button>
+      </div>
+      <form id="sbPaymentForm" style="padding-top:0.5rem;">
+        <div class="bill-meta-chip" style="margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.85rem;width:100%;">
+          <div>
+            <span style="font-size:0.75rem;color:var(--text-muted);display:block;">Bill Number</span>
+            <strong id="sbPayModalBillNum" style="font-size:1.05rem;color:var(--primary);">-</strong>
+          </div>
+          <div style="text-align:right;">
+            <span style="font-size:0.75rem;color:var(--text-muted);display:block;">Customer</span>
+            <strong id="sbPayModalCustomer">-</strong>
+          </div>
+        </div>
+
+        <!-- Bill Amounts Summary Stack -->
+        <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:0.85rem 1rem;margin-bottom:1.2rem;display:flex;justify-content:space-between;font-size:0.88rem;">
+          <div>
+            <span style="font-size:0.72rem;color:var(--text-dim);text-transform:uppercase;">Grand Total</span>
+            <div id="sbPayModalGrandTotal" style="font-weight:700;font-size:1rem;color:var(--text);">NPR 0</div>
+          </div>
+          <div>
+            <span style="font-size:0.72rem;color:var(--text-dim);text-transform:uppercase;">Currently Paid</span>
+            <div id="sbPayModalCurrentPaid" style="font-weight:700;font-size:1rem;color:var(--income);">NPR 0</div>
+          </div>
+          <div>
+            <span style="font-size:0.72rem;color:var(--text-dim);text-transform:uppercase;">Current Due</span>
+            <div id="sbPayModalCurrentDue" style="font-weight:700;font-size:1rem;color:#f43f5e;">NPR 0</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="sbPayModalMode">Payment Method</label>
+          <select id="sbPayModalMode" required>
+            <option value="cash">Cash</option>
+            <option value="online">Online / QR / Fonepay / Cheque</option>
+            <option value="credit">Credit / Due (Udhari)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem;">
+            <label for="sbPayModalAmount">Total Paid Amount (NPR)</label>
+            <button type="button" class="btn btn--ghost" id="sbPayModalFullSettleBtn"
+                    style="padding:0.2rem 0.5rem;font-size:0.72rem;color:var(--income);">
+              <i class="fa-solid fa-check-double"></i> Mark Fully Paid
+            </button>
+          </div>
+          <input type="number" id="sbPayModalAmount" min="0" step="0.01" required
+                 style="font-size:1.1rem;font-weight:700;color:var(--income);">
+        </div>
+
+        <!-- Remaining Due Display -->
+        <div style="background:rgba(244,63,94,0.06);border:1px solid rgba(244,63,94,0.2);border-radius:8px;padding:0.65rem 0.85rem;margin-bottom:1.1rem;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:0.82rem;font-weight:600;color:#f43f5e;">Updated Remaining Due:</span>
+          <strong id="sbPayModalNewDue" style="font-size:1rem;color:#f43f5e;">NPR 0</strong>
+        </div>
+
+        <div class="form-group">
+          <label for="sbPayModalAddress">
+            Customer Delivery / Billing Address
+            <span class="optional-badge">optional</span>
+          </label>
+          <input type="text" id="sbPayModalAddress" placeholder="e.g. Itahari-4, Sunsari">
+        </div>
+
+        <div class="form-group">
+          <label for="sbPayModalNote">
+            Payment Reference / Note
+            <span class="optional-badge">optional</span>
+          </label>
+          <input type="text" id="sbPayModalNote" placeholder="e.g. Fonepay Txn #1234, Cheque #0941, Cash received">
+        </div>
+
+        <p class="form-error" id="sbPayModalError" hidden></p>
+
+        <div class="modal__actions">
+          <button type="button" class="btn btn--ghost" data-close-pay-modal>Cancel</button>
+          <button type="submit" class="btn btn--primary btn--glow" id="sbSavePaymentBtn">
+            <i class="fa-solid fa-check"></i> Save Payment Update
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       CANCEL BILL MODAL
+  ══════════════════════════════════════════════ -->
+  <div class="modal" id="sbCancelModal" aria-hidden="true">
+    <div class="modal__backdrop" data-close-cancel-modal></div>
+    <div class="modal__dialog" role="dialog" style="max-width:480px;">
+      <div class="modal__header">
+        <h2><i class="fa-solid fa-ban" style="color:#f59e0b;"></i> Cancel Bill</h2>
+        <button type="button" class="modal__close" data-close-cancel-modal>&times;</button>
+      </div>
+      <div style="padding:0.25rem 0 1rem;">
+        <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:1rem;">
+          This will <strong style="color:#f59e0b;">void the bill</strong> and restore the
+          inventory stock for all items. The bill will remain visible as <em>Cancelled</em>.
+        </p>
+        <div class="form-group">
+          <label for="sbCancelReason">
+            Cancellation Reason
+            <span class="optional-badge">recommended</span>
+          </label>
+          <textarea id="sbCancelReason" rows="3"
+                    placeholder="e.g. Customer returned goods, Wrong items billed, Duplicate entry..."></textarea>
+        </div>
+        <p class="form-error" id="sbCancelError" hidden></p>
+      </div>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost" data-close-cancel-modal>Go Back</button>
+        <button type="button" class="btn btn--danger" id="sbConfirmCancelBtn"
+                style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;">
+          <i class="fa-solid fa-ban"></i> Yes, Cancel Bill &amp; Restore Stock
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       PRINT CHOICE MODAL (VAT BILL vs ESTIMATE BILL)
+  ══════════════════════════════════════════════ -->
+  <div class="modal" id="sbPrintChoiceModal" aria-hidden="true">
+    <div class="modal__backdrop" data-close-print-choice></div>
+    <div class="modal__dialog" role="dialog" style="max-width:540px;">
+      <div class="modal__header">
+        <h2>
+          <i class="fa-solid fa-print" style="color:var(--primary);"></i>
+          Select Print Format
+        </h2>
+        <button type="button" class="modal__close" data-close-print-choice aria-label="Close">&times;</button>
+      </div>
+      <div style="padding:0.75rem 0 1.25rem;">
+        <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1.2rem;">
+          Choose whether to print an official IRD-compliant <strong>VAT Tax Invoice</strong> or a clean <strong>Estimate / Quotation Slip</strong>:
+        </p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <!-- Option 1: VAT Bill -->
+          <div id="sbChooseVatBill" class="print-choice-card"
+               style="cursor:pointer;background:var(--surface-2);border:2px solid var(--border);border-radius:12px;padding:1.25rem 1rem;text-align:center;transition:all 0.2s ease;">
+            <div style="width:48px;height:48px;background:rgba(16,185,129,0.15);color:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 0.85rem;font-size:1.35rem;">
+              <i class="fa-solid fa-file-invoice"></i>
+            </div>
+            <strong style="display:block;font-size:1rem;color:var(--text);margin-bottom:0.25rem;">VAT Bill</strong>
+            <span style="display:block;font-size:0.78rem;font-weight:600;color:var(--primary);margin-bottom:0.5rem;">कर बिजक (13% VAT)</span>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin:0;line-height:1.35;">
+              Official Inland Revenue Dept format with Schedule-5, 9-digit PAN boxes &amp; 13% VAT calculation.
+            </p>
+          </div>
+
+          <!-- Option 2: Estimate Bill -->
+          <div id="sbChooseEstimateBill" class="print-choice-card"
+               style="cursor:pointer;background:var(--surface-2);border:2px solid var(--border);border-radius:12px;padding:1.25rem 1rem;text-align:center;transition:all 0.2s ease;">
+            <div style="width:48px;height:48px;background:rgba(59,130,246,0.15);color:#3b82f6;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 0.85rem;font-size:1.35rem;">
+              <i class="fa-solid fa-file-lines"></i>
+            </div>
+            <strong style="display:block;font-size:1rem;color:var(--text);margin-bottom:0.25rem;">Estimate Bill</strong>
+            <span style="display:block;font-size:0.78rem;font-weight:600;color:#3b82f6;margin-bottom:0.5rem;">अनुमानित बिल / कोटेशन</span>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin:0;line-height:1.35;">
+              Clean non-taxable estimate / quotation slip showing pure item rates, discount, net total &amp; balance due.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost" data-close-print-choice>Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="printArea" style="display:none;"></div>
+  <div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
+  <script src="{% static 'finance/js/nepali_date.js' %}?v={% now 'U' %}"></script>
+  <script src="{% static 'finance/js/sales_bills.js' %}?v={% now 'U' %}"></script>
+</body>
+</html>

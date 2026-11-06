@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="same-origin">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <title>{% block title %}Ecolith Enterprises{% endblock %}</title>
+  {% load static %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="icon" type="image/png" href="{% static 'finance/images/logo.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'finance/images/logo.png' %}">
+  <link rel="stylesheet" href="{% static 'finance/css/style.css' %}?v={% now 'U' %}">
+  <script src="{% static 'finance/js/theme-boot.js' %}"></script>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="app">
+    {% include "finance/partials/header.html" %}
+    <main id="main-content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  {% block extra_modals %}{% endblock %}
+  <div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
+  <script src="{% static 'finance/js/common.js' %}?v={% now 'U' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,138 +1,310 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard — Ecolith Enterprises</title>
-  {% load static %}
-  <!-- Google Fonts: Outfit -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="{% static 'finance/css/style.css' %}">
-  <script>
-    (function() {
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    })();
-  </script>
-</head>
-<body>
-  <div class="app">
-    <!-- Header with Branding and Unified Navigation -->
-    <header class="header">
-      <div class="header__brand">
-        <div class="brand-title">
-          <img src="{% static 'finance/images/logo.png' %}" alt="Ecolith Logo" onerror="this.src='https://ui-avatars.com/api/?name=EE&background=10b981&color=fff'">
-          <h1>Ecolith Enterprises</h1>
-        </div>
-        <div class="brand-meta">
-          <span class="location"><i class="fa-solid fa-shield-halved"></i> Admin Portal</span>
-        </div>
-        <p class="slogan">Manage staff accounts and approve access requests.</p>
-      </div>
+{% extends "finance/base.html" %}
+{% load static %}
+{% block title %}User & Role Access Management — Ecolith Enterprises{% endblock %}
+{% block content %}
 
-      <!-- Unified Navigation -->
-      <nav class="nav-pills">
-        <a href="{% url 'dashboard' %}" class="nav-link"><i class="fa-solid fa-chart-line"></i> Main Dashboard</a>
-        <a href="{% url 'admin_dashboard' %}" class="nav-link active"><i class="fa-solid fa-users-gear"></i> Admin Approvals</a>
-      </nav>
-
-      <!-- User Profile & Logout -->
-      <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <button type="button" class="theme-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme">
-          <i class="fa-solid fa-moon"></i>
-        </button>
-        <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); background: var(--surface-2); padding: 0.4rem 0.8rem; border-radius: 6px; border: 1px solid var(--border);">
-          <i class="fa-solid fa-user-circle" style="color: var(--primary);"></i> {{ request.user.username }}
-        </span>
-        <a href="{% url 'logout' %}" class="btn btn--ghost" style="padding: 0.4rem 0.8rem; font-size: 0.82rem; border-color: rgba(239, 68, 68, 0.3); color: #ef4444;">
-          <i class="fa-solid fa-right-from-bracket"></i> Logout
-        </a>
-      </div>
-    </header>
-
-    <div class="table-section glass">
-      <div class="table-section__header">
-        <h2><i class="fa-solid fa-user-clock"></i> Pending Approvals</h2>
-        <span class="table-section__count">{{ pending_users.count }} users waiting</span>
-      </div>
-      
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Requested Role</th>
-              <th>Registered On</th>
-              <th class="text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for u in pending_users %}
-            <tr>
-              <td>
-                <div style="font-weight: 600; color: var(--text-base);">{{ u.username }}</div>
-              </td>
-              <td>
-                <span class="badge badge--income">{{ u.userprofile.get_role_display }}</span>
-              </td>
-              <td>
-                <div style="color: var(--text-muted); font-size: 0.85rem;">{{ u.date_joined|date:"M d, Y" }}</div>
-              </td>
-              <td class="text-right">
-                <form method="POST" action="{% url 'approve_user' u.id %}" style="display:inline;">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn--primary btn--glow" style="padding: 0.4rem 1rem; font-size: 0.85rem;">
-                    <i class="fa-solid fa-check"></i> Approve
-                  </button>
-                </form>
-              </td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="4" class="empty-state">
-                <i class="fa-regular fa-circle-check" style="font-size: 2.5rem; color: var(--primary); opacity: 0.5; margin-bottom: 1rem; display: block;"></i>
-                No pending approval requests.
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+  <div class="page-intro">
+    <div>
+      <h2 class="page-heading">
+        <i class="fa-solid fa-users-gear" style="color:var(--amber);margin-right:0.5rem;"></i>
+        User & Role Management
+      </h2>
+      <p class="page-sub">Assign job roles (Admin, Manager, Staff) and control system permissions for each team member.</p>
     </div>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const themeToggleBtn = document.getElementById('themeToggleBtn');
-      if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', () => {
-          const doc = document.documentElement;
-          const currentTheme = doc.getAttribute('data-theme');
-          const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-          doc.setAttribute('data-theme', newTheme);
-          localStorage.setItem('theme', newTheme);
-          
-          const icon = themeToggleBtn.querySelector('i');
-          if (newTheme === 'light') {
-            icon.classList.replace('fa-sun', 'fa-moon');
-          } else {
-            icon.classList.replace('fa-moon', 'fa-sun');
-          }
-        });
-        
-        // Initial icon state
-        const icon = themeToggleBtn.querySelector('i');
-        if (document.documentElement.getAttribute('data-theme') === 'light') {
-          icon.classList.replace('fa-sun', 'fa-moon');
-        } else {
-          icon.classList.replace('fa-moon', 'fa-sun');
-        }
-      }
-    });
-  </script>
-</body>
-</html>
+  <!-- Role Permissions Reference Grid -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));gap:0.9rem;margin-bottom:1.5rem;">
+    <!-- Admin Card -->
+    <div class="glass" style="padding:1rem;border-radius:12px;border:1px solid rgba(245,158,11,0.25);background:rgba(245,158,11,0.03);">
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
+        <span style="width:28px;height:28px;border-radius:6px;background:rgba(245,158,11,0.15);color:var(--amber);display:flex;align-items:center;justify-content:center;font-size:0.8rem;">
+          <i class="fa-solid fa-shield-halved"></i>
+        </span>
+        <h3 style="margin:0;font-size:0.9rem;font-weight:700;color:var(--amber);">Admin</h3>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.4rem;line-height:1.4;">
+        Full system control: team access &amp; role assignment, reports, billing, expenses, customer dues, inventory edit.
+      </p>
+      <span class="badge" style="background:rgba(245,158,11,0.12);color:var(--amber);font-size:0.65rem;">Full Control</span>
+    </div>
+
+    <!-- Manager Card -->
+    <div class="glass" style="padding:1rem;border-radius:12px;border:1px solid rgba(16,185,129,0.25);background:rgba(16,185,129,0.03);">
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
+        <span style="width:28px;height:28px;border-radius:6px;background:rgba(16,185,129,0.15);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:0.8rem;">
+          <i class="fa-solid fa-user-tie"></i>
+        </span>
+        <h3 style="margin:0;font-size:0.9rem;font-weight:700;color:var(--primary);">Manager</h3>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.4rem;line-height:1.4;">
+        Full operations: financial reports, sales bills, customer dues, daily expenses, inventory management.
+      </p>
+      <span class="badge" style="background:rgba(16,185,129,0.12);color:var(--primary);font-size:0.65rem;">Reports &amp; Ops</span>
+    </div>
+
+    <!-- Accountant Card -->
+    <div class="glass" style="padding:1rem;border-radius:12px;border:1px solid rgba(99,102,241,0.25);background:rgba(99,102,241,0.03);">
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
+        <span style="width:28px;height:28px;border-radius:6px;background:rgba(99,102,241,0.15);color:#818cf8;display:flex;align-items:center;justify-content:center;font-size:0.8rem;">
+          <i class="fa-solid fa-calculator"></i>
+        </span>
+        <h3 style="margin:0;font-size:0.9rem;font-weight:700;color:#818cf8;">Accountant</h3>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.4rem;line-height:1.4;">
+        Full financial &amp; operational access: financial reports, expenses, customer ledgers &amp; dues, sales bills, inventory.
+      </p>
+      <span class="badge" style="background:rgba(99,102,241,0.12);color:#818cf8;font-size:0.65rem;">Full Financials</span>
+    </div>
+
+    <!-- Salesperson Card -->
+    <div class="glass" style="padding:1rem;border-radius:12px;border:1px solid rgba(6,182,212,0.25);background:rgba(6,182,212,0.03);">
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
+        <span style="width:28px;height:28px;border-radius:6px;background:rgba(6,182,212,0.15);color:var(--cyan);display:flex;align-items:center;justify-content:center;font-size:0.8rem;">
+          <i class="fa-solid fa-tags"></i>
+        </span>
+        <h3 style="margin:0;font-size:0.9rem;font-weight:700;color:var(--cyan);">Salesperson</h3>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.4rem;line-height:1.4;">
+        Sales &amp; POS: Sales Bills, Customer Details &amp; Due Amounts, Inventory stock viewing.
+      </p>
+      <span class="badge" style="background:rgba(6,182,212,0.12);color:var(--cyan);font-size:0.65rem;">Billing + Dues</span>
+    </div>
+
+    <!-- Receptionist Card -->
+    <div class="glass" style="padding:1rem;border-radius:12px;border:1px solid rgba(236,72,153,0.25);background:rgba(236,72,153,0.03);">
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
+        <span style="width:28px;height:28px;border-radius:6px;background:rgba(236,72,153,0.15);color:#f472b6;display:flex;align-items:center;justify-content:center;font-size:0.8rem;">
+          <i class="fa-solid fa-bell-concierge"></i>
+        </span>
+        <h3 style="margin:0;font-size:0.9rem;font-weight:700;color:#f472b6;">Receptionist</h3>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.4rem;line-height:1.4;">
+        Front desk: Customer directory &amp; Due balances, Sales billing, Inventory stock viewing.
+      </p>
+      <span class="badge" style="background:rgba(236,72,153,0.12);color:#f472b6;font-size:0.65rem;">Customers &amp; Dues</span>
+    </div>
+  </div>
+
+  <!-- 1. PENDING APPROVALS -->
+  <div class="table-section glass" style="margin-bottom:2rem;">
+    <div class="table-section__header">
+      <h2>
+        <i class="fa-solid fa-user-clock" style="color:var(--amber);"></i>
+        Pending Registrations
+      </h2>
+      <span class="table-section__count">
+        {% if pending_users %}
+          <span style="background:var(--amber-bg);color:var(--amber);border:1px solid rgba(245,158,11,0.25);
+                       padding:0.2rem 0.65rem;border-radius:6px;font-size:0.75rem;font-weight:700;">
+            {{ pending_users|length }} waiting for approval
+          </span>
+        {% else %}
+          <span style="color:var(--income);"><i class="fa-solid fa-check"></i> All clear</span>
+        {% endif %}
+      </span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Registered</th>
+            <th>Assign Job Role</th>
+            <th class="text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in pending_users %}
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:0.65rem;">
+                <div style="width:36px;height:36px;border-radius:50%;background:rgba(245,158,11,0.12);
+                            border:1px solid rgba(245,158,11,0.3);
+                            display:flex;align-items:center;justify-content:center;
+                            font-size:0.9rem;font-weight:800;color:var(--amber);flex-shrink:0;">
+                  {{ u.username|first|upper }}
+                </div>
+                <div>
+                  <div style="font-weight:700;font-size:0.9rem;">
+                    {{ u.first_name|default:u.username }}
+                    {% if u.first_name %}<span style="font-size:0.75rem;color:var(--text-muted);font-weight:normal;">(@{{ u.username }})</span>{% endif %}
+                  </div>
+                  <div style="font-size:0.78rem;color:var(--text-muted);display:flex;align-items:center;gap:0.6rem;margin-top:2px;flex-wrap:wrap;">
+                    {% if u.email %}<span><i class="fa-regular fa-envelope" style="color:#ea4335;"></i> {{ u.email }}</span>{% endif %}
+                    {% if u.last_name %}<span><i class="fa-solid fa-id-badge" style="color:var(--primary);"></i> Staff: {{ u.last_name }}</span>{% endif %}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td style="color:var(--text-muted);font-size:0.85rem;">{{ u.date_joined|date:"M d, Y · H:i" }}</td>
+            <td>
+              <form method="post" action="{% url 'approve_user' u.id %}" id="approveForm{{ u.id }}" style="display:flex;align-items:center;gap:0.6rem;">
+                {% csrf_token %}
+                <select name="role" style="padding:0.38rem 0.6rem;background:var(--surface-3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:0.82rem;">
+                  <option value="salesman" {% if u.userprofile.role == 'salesman' %}selected{% endif %}>Salesperson (POS &amp; Bills)</option>
+                  <option value="accountant" {% if u.userprofile.role == 'accountant' %}selected{% endif %}>Accountant (Expenses &amp; Ledgers)</option>
+                  <option value="receptionist" {% if u.userprofile.role == 'receptionist' %}selected{% endif %}>Receptionist (Front Desk &amp; Bills)</option>
+                  <option value="staff" {% if u.userprofile.role == 'staff' %}selected{% endif %}>General Staff</option>
+                  <option value="manager" {% if u.userprofile.role == 'manager' %}selected{% endif %}>Manager (Full Operations &amp; Reports)</option>
+                  <option value="admin" {% if u.userprofile.role == 'admin' %}selected{% endif %}>Admin (Full Control)</option>
+                </select>
+            </td>
+            <td class="text-right">
+                <button type="submit" class="btn btn--primary btn--glow" style="font-size:0.82rem;padding:0.42rem 1rem;">
+                  <i class="fa-solid fa-check"></i> Approve &amp; Assign Role
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="empty-state">
+              <i class="fa-solid fa-circle-check" style="color:var(--income);opacity:1 !important;"></i>
+              No pending registrations. New users will show up here for role assignment.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 2. TEAM MEMBERS & ROLES -->
+  <div class="table-section glass">
+    <div class="table-section__header">
+      <h2>
+        <i class="fa-solid fa-users"></i>
+        Active Team Members &amp; Access Control
+      </h2>
+      <span class="table-section__count">{{ active_users|length }} members</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Current Role</th>
+            <th>Permissions Overview</th>
+            <th>Change Role</th>
+            <th class="text-right">Access Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in active_users %}
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:0.65rem;">
+                <div style="width:36px;height:36px;border-radius:50%;
+                            background:{% if u.userprofile.role == 'admin' %}rgba(245,158,11,0.15){% elif u.userprofile.role == 'manager' %}rgba(16,185,129,0.15){% elif u.userprofile.role == 'accountant' %}rgba(99,102,241,0.15){% elif u.userprofile.role == 'salesman' %}rgba(6,182,212,0.15){% else %}var(--surface-3){% endif %};
+                            border:1px solid {% if u.userprofile.role == 'admin' %}rgba(245,158,11,0.3){% elif u.userprofile.role == 'manager' %}rgba(16,185,129,0.3){% elif u.userprofile.role == 'accountant' %}rgba(99,102,241,0.3){% elif u.userprofile.role == 'salesman' %}rgba(6,182,212,0.3){% else %}var(--border){% endif %};
+                            display:flex;align-items:center;justify-content:center;
+                            font-size:0.9rem;font-weight:800;
+                            color:{% if u.userprofile.role == 'admin' %}var(--amber){% elif u.userprofile.role == 'manager' %}var(--primary){% elif u.userprofile.role == 'accountant' %}#818cf8{% elif u.userprofile.role == 'salesman' %}var(--cyan){% else %}var(--text){% endif %};flex-shrink:0;">
+                  {{ u.username|first|upper }}
+                </div>
+                <div>
+                  <div style="font-weight:700;font-size:0.9rem;">
+                    {{ u.first_name|default:u.username }}
+                    {% if u.first_name %}<span style="font-size:0.75rem;color:var(--text-muted);font-weight:normal;">(@{{ u.username }})</span>{% endif %}
+                    {% if u.id == request.user.id %}
+                      <span class="badge" style="background:rgba(16,185,129,0.15);color:var(--primary);font-size:0.65rem;margin-left:0.3rem;">You</span>
+                    {% endif %}
+                  </div>
+                  <div style="font-size:0.78rem;color:var(--text-muted);display:flex;align-items:center;gap:0.6rem;margin-top:2px;flex-wrap:wrap;">
+                    {% if u.email %}<span><i class="fa-regular fa-envelope" style="color:#ea4335;"></i> {{ u.email }}</span>{% endif %}
+                    {% if u.last_name %}<span><i class="fa-solid fa-id-badge" style="color:var(--primary);"></i> Staff: {{ u.last_name }}</span>{% endif %}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td>
+              {% if u.userprofile.role == 'admin' %}
+                <span class="badge" style="background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid rgba(245,158,11,0.3);font-weight:700;">
+                  <i class="fa-solid fa-shield-halved" style="margin-right:0.3rem;"></i> Admin
+                </span>
+              {% elif u.userprofile.role == 'manager' %}
+                <span class="badge" style="background:rgba(16,185,129,0.15);color:var(--primary);border:1px solid rgba(16,185,129,0.3);font-weight:700;">
+                  <i class="fa-solid fa-user-tie" style="margin-right:0.3rem;"></i> Manager
+                </span>
+              {% elif u.userprofile.role == 'accountant' %}
+                <span class="badge" style="background:rgba(99,102,241,0.15);color:#818cf8;border:1px solid rgba(99,102,241,0.3);font-weight:700;">
+                  <i class="fa-solid fa-calculator" style="margin-right:0.3rem;"></i> Accountant
+                </span>
+              {% elif u.userprofile.role == 'salesman' %}
+                <span class="badge" style="background:rgba(6,182,212,0.15);color:var(--cyan);border:1px solid rgba(6,182,212,0.3);font-weight:700;">
+                  <i class="fa-solid fa-tags" style="margin-right:0.3rem;"></i> Salesperson
+                </span>
+              {% elif u.userprofile.role == 'receptionist' %}
+                <span class="badge" style="background:rgba(236,72,153,0.15);color:#f472b6;border:1px solid rgba(236,72,153,0.3);font-weight:700;">
+                  <i class="fa-solid fa-bell-concierge" style="margin-right:0.3rem;"></i> Receptionist
+                </span>
+              {% else %}
+                <span class="badge" style="background:var(--surface-3);color:var(--text-dim);border:1px solid var(--border);font-weight:600;">
+                  <i class="fa-solid fa-user" style="margin-right:0.3rem;"></i> Staff
+                </span>
+              {% endif %}
+            </td>
+            <td>
+              <div style="font-size:0.78rem;color:var(--text-muted);line-height:1.5;">
+                {% if u.userprofile.role == 'admin' %}
+                  <span style="color:var(--amber);font-weight:600;">Full System &amp; Staff Access Control</span>
+                {% elif u.userprofile.role == 'manager' %}
+                  <span>Bills, Expenses, Inventory, Customers, <strong style="color:var(--text);">Reports</strong></span>
+                {% elif u.userprofile.role == 'accountant' %}
+                  <span>Ledgers, Expenses, Sales Bills &amp; Invoices</span>
+                {% elif u.userprofile.role == 'salesman' %}
+                  <span>Sales Bills, Point of Sale &amp; Customer Directory</span>
+                {% elif u.userprofile.role == 'receptionist' %}
+                  <span>Customer Inquiries, Front Desk &amp; Quick Billing</span>
+                {% else %}
+                  <span>Bills, Daily Expenses, Inventory, Customers <em style="color:var(--text-dim);">(Reports restricted)</em></span>
+                {% endif %}
+              </div>
+            </td>
+            <td>
+              {% if u.id != request.user.id %}
+              <form method="post" action="{% url 'update_user_role' u.id %}" style="display:flex;align-items:center;gap:0.4rem;">
+                {% csrf_token %}
+                <select name="role" style="padding:0.35rem 0.55rem;background:var(--surface-3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:0.8rem;">
+                  <option value="salesman" {% if u.userprofile.role == 'salesman' %}selected{% endif %}>Salesperson</option>
+                  <option value="accountant" {% if u.userprofile.role == 'accountant' %}selected{% endif %}>Accountant</option>
+                  <option value="receptionist" {% if u.userprofile.role == 'receptionist' %}selected{% endif %}>Receptionist</option>
+                  <option value="staff" {% if u.userprofile.role == 'staff' %}selected{% endif %}>Staff</option>
+                  <option value="manager" {% if u.userprofile.role == 'manager' %}selected{% endif %}>Manager</option>
+                  <option value="admin" {% if u.userprofile.role == 'admin' %}selected{% endif %}>Admin</option>
+                </select>
+                <button type="submit" class="btn btn--ghost" style="padding:0.35rem 0.65rem;font-size:0.78rem;" title="Save role">
+                  <i class="fa-solid fa-floppy-disk"></i>
+                </button>
+              </form>
+              {% else %}
+                <span style="font-size:0.78rem;color:var(--text-dim);font-style:italic;">Primary Admin</span>
+              {% endif %}
+            </td>
+            <td class="text-right">
+              {% if u.id != request.user.id %}
+                <form method="post" action="{% url 'toggle_user_access' u.id %}" style="display:inline-block;">
+                  {% csrf_token %}
+                  {% if u.userprofile.is_approved %}
+                    <button type="submit" class="btn btn--danger" style="font-size:0.78rem;padding:0.35rem 0.8rem;background:rgba(244,63,94,0.10);border-color:rgba(244,63,94,0.25);color:#f43f5e;" title="Suspend access">
+                      <i class="fa-solid fa-user-lock"></i> Suspend
+                    </button>
+                  {% else %}
+                    <button type="submit" class="btn btn--primary" style="font-size:0.78rem;padding:0.35rem 0.8rem;" title="Reactivate access">
+                      <i class="fa-solid fa-unlock"></i> Activate
+                    </button>
+                  {% endif %}
+                </form>
+              {% else %}
+                <span class="badge" style="background:rgba(16,185,129,0.12);color:var(--primary);font-size:0.72rem;">Active</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+{% endblock %}

@@ -57,8 +57,12 @@ async function apiFetch(url, options = {}) {
 }
 
 function formatMoney(value) {
-  const num = Number(value);
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "NPR" }).format(Number.isFinite(num) ? num : 0);
+  const num = Number.isFinite(Number(value)) ? Number(value) : 0;
+  const hasCents = num % 1 !== 0;
+  return "NPR " + num.toLocaleString("en-US", {
+    minimumFractionDigits: hasCents ? 2 : 0,
+    maximumFractionDigits: 2,
+  });
 }
 
 function escapeHtml(text) {
@@ -82,7 +86,7 @@ async function loadInventory() {
     renderSummary();
     renderItems();
   } catch (err) {
-    els.inventoryBody.innerHTML = `<tr><td colspan="9" class="empty-state">Error loading inventory: ${escapeHtml(err.message)}</td></tr>`;
+    els.inventoryBody.innerHTML = `<tr><td colspan="10" class="empty-state">Error loading inventory: ${escapeHtml(err.message)}</td></tr>`;
   }
 }
 
@@ -129,7 +133,7 @@ function renderItems() {
   els.invItemCount.textContent = `${filtered.length} item${filtered.length === 1 ? "" : "s"}`;
 
   if (!filtered.length) {
-    els.inventoryBody.innerHTML = `<tr><td colspan="9" class="empty-state">No inventory items match your search.</td></tr>`;
+    els.inventoryBody.innerHTML = `<tr><td colspan="10" class="empty-state">No inventory items match your search.</td></tr>`;
     return;
   }
 
@@ -151,10 +155,12 @@ function renderItems() {
           <td>${statusBadge}</td>
           <td class="text-right font-weight:600;">${formatMoney(item.total_cost_value)}</td>
           <td>
-            <button type="button" class="btn btn--ghost" style="padding:0.2rem 0.5rem; font-size:0.8rem;" data-adjust="${item.id}" data-change="1">+1</button>
-            <button type="button" class="btn btn--ghost" style="padding:0.2rem 0.5rem; font-size:0.8rem;" data-adjust="${item.id}" data-change="-1">-1</button>
-            <button type="button" class="btn btn--edit" data-edit="${item.id}">Edit</button>
-            <button type="button" class="btn btn--danger" data-delete="${item.id}">Delete</button>
+            ${window.CAN_EDIT_INVENTORY !== false ? `
+              <button type="button" class="btn btn--ghost" style="padding:0.2rem 0.5rem; font-size:0.8rem;" data-adjust="${item.id}" data-change="1">+1</button>
+              <button type="button" class="btn btn--ghost" style="padding:0.2rem 0.5rem; font-size:0.8rem;" data-adjust="${item.id}" data-change="-1">-1</button>
+              <button type="button" class="btn btn--edit" data-edit="${item.id}">Edit</button>
+              <button type="button" class="btn btn--danger" data-delete="${item.id}">Delete</button>
+            ` : `<span style="font-size:0.75rem;color:var(--text-dim);font-style:italic;">View Only</span>`}
           </td>
         </tr>
       `;
@@ -242,7 +248,9 @@ async function deleteItem(id) {
   }
 }
 
-els.addItemBtn.addEventListener("click", () => openModal("add"));
+if (els.addItemBtn) {
+  els.addItemBtn.addEventListener("click", () => openModal("add"));
+}
 els.itemForm.addEventListener("submit", saveItem);
 
 document.querySelectorAll("[data-close-item-modal]").forEach((el) => el.addEventListener("click", closeModal));

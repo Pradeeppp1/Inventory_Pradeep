@@ -58,8 +58,12 @@ async function apiFetch(url, options = {}) {
 }
 
 function formatMoney(value) {
-  const num = Number(value);
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "NPR" }).format(Number.isFinite(num) ? num : 0);
+  const num = Number.isFinite(Number(value)) ? Number(value) : 0;
+  const hasCents = num % 1 !== 0;
+  return "NPR " + num.toLocaleString("en-US", {
+    minimumFractionDigits: hasCents ? 2 : 0,
+    maximumFractionDigits: 2,
+  });
 }
 
 function formatDate(isoDate) {

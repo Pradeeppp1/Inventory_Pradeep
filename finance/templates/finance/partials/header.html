@@ -1,0 +1,94 @@
+{% load static %}
+<header class="header">
+
+  <!-- Brand -->
+  <a class="header__brand-link" href="{% url 'dashboard' %}">
+    <div class="brand-title">
+      <img src="{% static 'finance/images/logo.png' %}" alt="Ecolith" width="40" height="40"
+           style="border-radius:10px;object-fit:cover;background:#000;border:1px solid rgba(16,185,129,0.35);box-shadow:0 2px 8px rgba(0,0,0,0.35);"
+           onerror="this.style.display='none'">
+      <div>
+        <h1>Ecolith Enterprises</h1>
+        <span class="location">
+          <i class="fa-solid fa-location-dot" aria-hidden="true"></i> Itahari, Sunsari
+        </span>
+      </div>
+    </div>
+  </a>
+
+  <!-- Nav -->
+  <nav class="nav-pills" aria-label="Main navigation">
+    <a href="{% url 'dashboard' %}"
+       class="nav-link{% if request.resolver_match.url_name == 'dashboard' %} active{% endif %}">
+      <i class="fa-solid fa-chart-pie" aria-hidden="true"></i>
+      <span>Dashboard</span>
+    </a>
+    {% if can_view_expenses %}
+    <a href="{% url 'expenses' %}"
+       class="nav-link{% if request.resolver_match.url_name == 'expenses' %} active{% endif %}">
+      <i class="fa-solid fa-receipt" aria-hidden="true"></i>
+      <span>Expenses</span>
+    </a>
+    {% endif %}
+    {% if can_view_customers %}
+    <a href="{% url 'customers' %}"
+       class="nav-link{% if request.resolver_match.url_name == 'customers' %} active{% endif %}">
+      <i class="fa-solid fa-users" aria-hidden="true"></i>
+      <span>Customers &amp; Dues</span>
+    </a>
+    {% endif %}
+    <!-- Inventory view access for everyone -->
+    <a href="{% url 'inventory' %}"
+       class="nav-link{% if request.resolver_match.url_name == 'inventory' %} active{% endif %}">
+      <i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i>
+      <span>Inventory</span>
+    </a>
+    {% if can_view_billing %}
+    <a href="{% url 'sales_bills' %}"
+       class="nav-link{% if request.resolver_match.url_name == 'sales_bills' %} active{% endif %}">
+      <i class="fa-solid fa-file-invoice" aria-hidden="true"></i>
+      <span>Sales Bills</span>
+    </a>
+    {% endif %}
+    {% if can_view_reports %}
+    <a href="{% url 'reports' %}"
+       class="nav-link{% if request.resolver_match.url_name == 'reports' %} active{% endif %}">
+      <i class="fa-solid fa-chart-bar" aria-hidden="true"></i>
+      <span>Reports</span>
+    </a>
+    {% endif %}
+    {% if is_app_admin %}
+    <a href="{% url 'admin_dashboard' %}"
+       class="nav-link{% if request.resolver_match.url_name == 'admin_dashboard' %} active{% endif %}"
+       style="color:var(--amber);">
+      <i class="fa-solid fa-users-gear" aria-hidden="true"></i>
+      <span>Staff Access</span>
+    </a>
+    {% endif %}
+  </nav>
+
+  <!-- Actions -->
+  <div class="header-actions">
+    <button type="button" class="theme-btn" id="themeToggleBtn" aria-label="Toggle theme" title="Toggle theme">
+      <i class="fa-solid fa-moon" aria-hidden="true"></i>
+    </button>
+    <span class="user-chip" title="Signed in as {{ request.user.username }} ({{ user_role|title }})">
+      <i class="fa-solid fa-circle-user" aria-hidden="true"></i>
+      {{ request.user.username }}
+      {% if user_role %}
+        <span style="font-size:0.65rem;font-weight:700;text-transform:uppercase;padding:0.1rem 0.35rem;border-radius:4px;
+                     background:rgba(255,255,255,0.08);color:var(--text-dim);margin-left:0.3rem;">
+          {{ user_role }}
+        </span>
+      {% endif %}
+    </span>
+    <form method="post" action="{% url 'logout' %}" class="logout-form">
+      {% csrf_token %}
+      <button type="submit" class="btn btn--logout">
+        <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+        <span>Logout</span>
+      </button>
+    </form>
+  </div>
+
+</header>
