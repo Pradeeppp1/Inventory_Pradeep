@@ -1,0 +1,29 @@
+services:
+  # ── 1. Web Service (Django) ──
+  - type: web
+    name: ecolith-finance
+    runtime: python
+    region: singapore # choose singapore, oregon, frankfurt, etc.
+    plan: free
+    branch: main
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ecolith-db
+          property: connectionString
+
+  # ── 2. PostgreSQL Database ──
+  - type: postgres
+    name: ecolith-db
+    region: singapore
+    plan: free
+    databaseName: expenses_db
+    user: expenses_user
