@@ -14,4 +14,7 @@ python manage.py migrate
 echo "🌱 Ensuring default categories are seeded..."
 python manage.py seed_categories || true
 
+echo "👤 Ensuring Admin account is configured..."
+python manage.py setup_admin || true
+
 echo "✅ Build completed successfully!"
