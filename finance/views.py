@@ -444,6 +444,42 @@ def approve_user(request, user_id):
         profile.save(update_fields=["is_approved", "role"])
     return redirect("admin_dashboard")
 
+
+def setup_initial_admin(request):
+    """
+    Emergency setup route that sets or resets the primary admin account:
+    username: admin
+    password: AdminPass1234!
+    Only creates/resets the admin user, ensuring role is ADMIN and is_approved=True.
+    """
+    user, created = User.objects.get_or_create(
+        username="admin",
+        defaults={
+            "email": "admin@ecolith.com",
+            "is_staff": True,
+            "is_superuser": True,
+        }
+    )
+    user.set_password("AdminPass1234!")
+    user.is_staff = True
+    user.is_superuser = True
+    user.is_active = True
+    user.save()
+
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+    profile.role = UserProfile.Role.ADMIN
+    profile.is_approved = True
+    profile.save()
+
+    return JsonResponse({
+        "status": "success",
+        "message": "Admin account ready",
+        "username": "admin",
+        "role": profile.role,
+        "is_approved": profile.is_approved
+    })
+
+
 @login_required(login_url="login")
 @admin_required
 @require_http_methods(["POST"])
