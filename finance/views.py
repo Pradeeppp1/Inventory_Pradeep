@@ -478,6 +478,16 @@ def setup_initial_admin(request):
     return redirect("dashboard")
 
 
+def run_import_birtamode(request):
+    """Triggers the import_birtamode command on the live database."""
+    from django.core.management import call_command
+    from io import StringIO
+    out = StringIO()
+    call_command("import_birtamode", stdout=out)
+    return redirect("customers")
+
+
+
 @login_required(login_url="login")
 @admin_required
 @require_http_methods(["POST"])
