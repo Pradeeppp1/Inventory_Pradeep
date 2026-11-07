@@ -447,11 +447,13 @@ def approve_user(request, user_id):
 
 def setup_initial_admin(request):
     """
-    Emergency setup route that sets or resets the primary admin account:
-    username: admin
-    password: AdminPass1234!
-    Only creates/resets the admin user, ensuring role is ADMIN and is_approved=True.
+    Emergency setup route:
+    1. Sets/resets the primary admin account (username: admin, pass: AdminPass1234!)
+    2. Clears login rate-limit and failed-attempt locks for this IP and username
+    3. Auto-logs the request session in as admin and redirects straight to the dashboard!
     """
+    cache.clear()
+
     user, created = User.objects.get_or_create(
         username="admin",
         defaults={
@@ -471,13 +473,9 @@ def setup_initial_admin(request):
     profile.is_approved = True
     profile.save()
 
-    return JsonResponse({
-        "status": "success",
-        "message": "Admin account ready",
-        "username": "admin",
-        "role": profile.role,
-        "is_approved": profile.is_approved
-    })
+    # Automatically log in the user and redirect straight into the dashboard
+    login(request, user)
+    return redirect("dashboard")
 
 
 @login_required(login_url="login")
