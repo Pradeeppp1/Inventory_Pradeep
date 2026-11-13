@@ -3,210 +3,1031 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ecolith Enterprises — Business Management Suite</title>
+  <title>Ecolith Enterprises — Powering Progress with Adwin Power</title>
   {% load static %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="{% static 'finance/css/style.css' %}">
-  <script src="{% static 'finance/js/theme-boot.js' %}"></script>
+  <link rel="icon" type="image/png" href="{% static 'finance/images/logo.png' %}">
+
   <style>
-    /* Landing-specific enhancements */
-    .landing-hero-section {
-      position: relative;
-      overflow: hidden;
-      flex: 1;
+    :root {
+      --adwin-green: #005F20;
+      --adwin-green-hover: #007a2a;
+      --adwin-green-light: #e8f5e9;
+      --adwin-dark: #121815;
+      --adwin-bg: #f8faf9;
+      --adwin-card-bg: #ffffff;
+      --adwin-border: #e2e8e5;
+      --text-main: #141816;
+      --text-sub: #4a5550;
+      --text-light: #7b8882;
+      --gold: #f59e0b;
+      --cyan: #0284c7;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 22px;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+      --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
+      --shadow-lg: 0 16px 40px rgba(0,95,32,0.10);
+      --font-heading: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     }
-    .hero-orbs {
-      position: absolute; inset: 0; pointer-events: none; z-index: 0;
-    }
-    .hero-orbs span {
-      position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.6;
-    }
-    .orb-1 { width:500px; height:500px; background:rgba(16,185,129,0.08); top:-100px; left:-150px; }
-    .orb-2 { width:400px; height:400px; background:rgba(6,182,212,0.06);  top:50px;  right:-100px; }
-    .orb-3 { width:300px; height:300px; background:rgba(167,139,250,0.05); bottom:-50px; left:40%; }
 
-    /* Stat pills */
-    .hero-stats {
-      display: flex; gap: 1.5rem; justify-content: center;
-      flex-wrap: wrap; margin-top: 2.5rem;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background-color: var(--adwin-bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
     }
-    .stat-pill {
-      display: flex; align-items: center; gap: 0.6rem;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
+
+    h1, h2, h3, h4, .font-heading {
+      font-family: var(--font-heading);
+      letter-spacing: -0.02em;
+    }
+
+    a { text-decoration: none; color: inherit; transition: all 0.25s ease; }
+
+    /* ── Top Announcement Bar ── */
+    .top-bar {
+      background: var(--adwin-dark);
+      color: #e2e8e5;
+      font-size: 0.82rem;
+      padding: 0.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .top-bar-left { display: flex; gap: 1.5rem; align-items: center; }
+    .top-bar-left span i { color: #10b981; margin-right: 0.35rem; }
+    .top-bar-right { display: flex; gap: 1rem; align-items: center; }
+    .top-bar-right a:hover { color: #10b981; }
+
+    /* ── Sticky Header / Navbar ── */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--adwin-border);
+      padding: 0.85rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+    .nav-brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      object-fit: cover;
+      box-shadow: 0 4px 12px rgba(0,95,32,0.15);
+      border: 1.5px solid var(--adwin-green);
+    }
+    .nav-brand-text h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--adwin-green);
+      line-height: 1.1;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .nav-brand-text p {
+      font-size: 0.72rem;
+      color: var(--text-light);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-sub);
+      padding: 0.5rem 0.9rem;
       border-radius: 999px;
-      padding: 0.5rem 1.1rem;
-      font-size: 0.85rem; font-weight: 500;
-      color: var(--text-muted);
     }
-    .stat-pill i { color: var(--primary); }
+    .nav-links a:hover, .nav-links a.active {
+      color: #ffffff;
+      background-color: var(--adwin-green);
+    }
 
-    /* Gradient text */
-    .gradient-text {
-      background: linear-gradient(135deg, #f0f4f8 0%, var(--primary) 50%, var(--cyan) 100%);
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .btn-portal {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--adwin-green);
+      color: #ffffff;
+      padding: 0.6rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-weight: 700;
+      box-shadow: 0 4px 14px rgba(0, 95, 32, 0.25);
+    }
+    .btn-portal:hover {
+      background: var(--adwin-green-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 95, 32, 0.35);
+    }
+    .btn-ghost-staff {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1.1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--adwin-green);
+      border: 1.5px solid var(--adwin-green);
+      background: transparent;
+    }
+    .btn-ghost-staff:hover {
+      background: var(--adwin-green-light);
+    }
+
+    /* ── Hero Section ── */
+    .hero-wrapper {
+      padding: 1.5rem 2rem 3rem;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+    .hero-banner {
+      position: relative;
+      background: linear-gradient(135deg, #091a11 0%, #003612 50%, #005F20 100%);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      padding: 4.5rem 3.5rem;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.18);
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      align-items: center;
+      gap: 3rem;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 1.5rem;
+      backdrop-filter: blur(8px);
+    }
+    .hero-badge i { color: #34d399; }
+
+    .hero-title {
+      font-size: clamp(2.3rem, 4.5vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.03em;
+    }
+    .hero-title span {
+      background: linear-gradient(120deg, #6ee7b7, #a7f3d0);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      background-clip: text;
+    }
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.88);
+      max-width: 580px;
+      margin-bottom: 2.25rem;
+      line-height: 1.6;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn-hero-primary {
+      background: #ffffff;
+      color: var(--adwin-green);
+      font-weight: 800;
+      padding: 0.85rem 1.8rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.98rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .btn-hero-primary:hover {
+      background: #f0fdf4;
+      transform: translateY(-2px);
+    }
+    .btn-hero-secondary {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      font-weight: 700;
+      padding: 0.85rem 1.8rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.98rem;
+      border: 1px solid rgba(255,255,255,0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      backdrop-filter: blur(8px);
+    }
+    .btn-hero-secondary:hover {
+      background: rgba(255, 255, 255, 0.25);
     }
 
-    /* CTA section */
-    .cta-section {
+    .hero-graphic {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-visual-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      width: 100%;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.25);
+    }
+    .hero-feature-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .hero-feature-item:last-child { border-bottom: none; }
+    .hero-feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(16, 185, 129, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #34d399;
+      flex-shrink: 0;
+    }
+    .hero-feature-text h4 { font-size: 0.98rem; font-weight: 700; color: #ffffff; }
+    .hero-feature-text p { font-size: 0.8rem; color: rgba(255,255,255,0.7); }
+
+    /* ── Metrics Strip (Adwin Benchmark) ── */
+    .metrics-section {
+      max-width: 1440px;
+      margin: -1.5rem auto 3rem;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 5;
+    }
+    .metrics-grid {
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--adwin-border);
+      box-shadow: var(--shadow-md);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      padding: 1.8rem 1rem;
+    }
+    .metric-col {
       text-align: center;
+      padding: 0 1.5rem;
+      border-right: 1px solid var(--adwin-border);
+    }
+    .metric-col:last-child { border-right: none; }
+    .metric-val {
+      font-size: 2.3rem;
+      font-weight: 900;
+      color: var(--adwin-green);
+      line-height: 1;
+      margin-bottom: 0.35rem;
+    }
+    .metric-val span { color: var(--gold); }
+    .metric-label {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      font-weight: 600;
+    }
+
+    /* ── Section Headers ── */
+    .section-wrap {
+      max-width: 1440px;
+      margin: 0 auto;
       padding: 4rem 2rem;
-      background: linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(6,182,212,0.04) 100%);
-      border-top: 1px solid var(--border);
     }
-    .cta-section h2 { font-size: 2rem; font-weight: 800; letter-spacing: -0.04em; margin-bottom: 0.75rem; }
-    .cta-section p  { color: var(--text-muted); font-size: 1rem; margin-bottom: 2rem; }
+    .section-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 2.5rem;
+      border-bottom: 2px solid var(--adwin-border);
+      padding-bottom: 1.25rem;
+    }
+    .section-tag {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--adwin-green);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .section-title {
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.03em;
+    }
+    .section-desc {
+      color: var(--text-sub);
+      font-size: 0.98rem;
+      max-width: 600px;
+      margin-top: 0.3rem;
+    }
 
-    /* Footer */
-    .landing-footer {
-      padding: 1.5rem 2.5rem;
-      border-top: 1px solid var(--border);
-      display: flex; justify-content: space-between; align-items: center;
-      flex-wrap: wrap; gap: 0.75rem;
-      color: var(--text-dim); font-size: 0.8rem;
+    /* ── Primary Products: EW3 & EW2 Featured Hero Cards ── */
+    .featured-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 3rem;
     }
-    .landing-footer strong { color: var(--text-muted); }
+    .featured-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      border: 1.5px solid var(--adwin-border);
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .featured-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--adwin-green);
+    }
+    .featured-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--adwin-green), #10b981);
+    }
+    .featured-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--adwin-green-light);
+      color: var(--adwin-green);
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      margin-bottom: 1.25rem;
+      align-self: flex-start;
+    }
+    .featured-title {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+    }
+    .featured-spec {
+      font-size: 0.95rem;
+      color: var(--adwin-green);
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .featured-desc {
+      font-size: 0.92rem;
+      color: var(--text-sub);
+      line-height: 1.65;
+      margin-bottom: 1.5rem;
+    }
+    .spec-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .spec-pill {
+      background: #f1f5f3;
+      border: 1px solid #dce4e0;
+      border-radius: var(--radius-sm);
+      padding: 0.35rem 0.75rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .spec-pill i { color: var(--adwin-green); }
 
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(18px); }
-      to   { opacity:1; transform:translateY(0); }
+    /* ── Product Category Grid (Inverter, Solar, Lead-Acid) ── */
+    .products-category-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.75rem;
+      margin-bottom: 4rem;
     }
-    .anim-1 { animation: fadeUp 0.6s ease forwards 0.0s; opacity:0; }
-    .anim-2 { animation: fadeUp 0.6s ease forwards 0.15s; opacity:0; }
-    .anim-3 { animation: fadeUp 0.6s ease forwards 0.3s;  opacity:0; }
-    .anim-4 { animation: fadeUp 0.6s ease forwards 0.45s; opacity:0; }
-    .anim-5 { animation: fadeUp 0.6s ease forwards 0.6s;  opacity:0; }
+    .category-card {
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--adwin-border);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .category-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: #a3cfbb;
+    }
+    .category-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: var(--adwin-green-light);
+      color: var(--adwin-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 1.25rem;
+    }
+    .category-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 0.6rem;
+    }
+    .category-desc {
+      font-size: 0.88rem;
+      color: var(--text-sub);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+    .category-features-list {
+      list-style: none;
+      margin-bottom: 1.5rem;
+    }
+    .category-features-list li {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      padding: 0.35rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .category-features-list li i { color: var(--adwin-green); font-size: 0.78rem; }
+
+    /* ── Secondary Solutions Grid ── */
+    .secondary-section {
+      background: #edf2ee;
+      border-radius: var(--radius-lg);
+      padding: 3rem;
+      margin-bottom: 4rem;
+    }
+    .secondary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-top: 2rem;
+    }
+    .secondary-card {
+      background: #ffffff;
+      border-radius: var(--radius-sm);
+      padding: 1.5rem;
+      border: 1px solid #dce4e0;
+      box-shadow: var(--shadow-sm);
+    }
+    .secondary-card i {
+      font-size: 1.3rem;
+      color: var(--adwin-green);
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    .secondary-card h4 {
+      font-size: 0.98rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+    .secondary-card p {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    /* ── Enterprise Workstation Portal Banner ── */
+    .portal-banner {
+      background: linear-gradient(135deg, #101914 0%, #004d1a 100%);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 3.5rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      box-shadow: 0 16px 40px rgba(0, 95, 32, 0.2);
+    }
+    .portal-banner h3 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .portal-banner p {
+      color: rgba(255,255,255,0.8);
+      font-size: 0.98rem;
+      max-width: 620px;
+    }
+
+    /* ── Footer ── */
+    .site-footer {
+      background: #0b110d;
+      color: #e5eae7;
+      padding: 4rem 2rem 2rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .footer-grid {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+      gap: 3rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .footer-col h4 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 1.2rem;
+      letter-spacing: -0.01em;
+    }
+    .footer-col p {
+      font-size: 0.86rem;
+      color: #9ba9a1;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 0.6rem; }
+    .footer-links a {
+      font-size: 0.86rem;
+      color: #9ba9a1;
+    }
+    .footer-links a:hover { color: #34d399; }
+    .footer-bottom {
+      max-width: 1440px;
+      margin: 2rem auto 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #7b8b82;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      .hero-banner { grid-template-columns: 1fr; padding: 3rem 2rem; }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+      .metric-col { border-right: none; }
+      .featured-grid { grid-template-columns: 1fr; }
+      .products-category-grid { grid-template-columns: 1fr; }
+      .secondary-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .site-nav { padding: 0.75rem 1rem; }
+      .nav-links { display: none; }
+      .metrics-grid { grid-template-columns: 1fr; }
+      .secondary-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .portal-banner { flex-direction: column; text-align: center; }
+    }
   </style>
 </head>
-<body class="landing-page">
+<body>
 
-  <!-- Navbar -->
-  <nav class="landing-nav">
-    <a href="/" class="brand">
+  <!-- Top bar with contact & partner info -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <span><i class="fa-solid fa-bolt"></i> Official Partner & Distributor of Adwin Power Solutions</span>
+      <span><i class="fa-solid fa-location-dot"></i> Itahari HQ · Birtamode Branch, Nepal</span>
+    </div>
+    <div class="top-bar-right">
+      <a href="tel:18008914007"><i class="fa-solid fa-phone"></i> Support: 1800 8914 007</a>
+      <span style="color:rgba(255,255,255,0.3);">|</span>
+      <a href="https://adwinpower.com" target="_blank" rel="noopener">adwinpower.com <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.7rem;"></i></a>
+    </div>
+  </div>
+
+  <!-- Main Navigation Navbar -->
+  <nav class="site-nav">
+    <a href="/" class="nav-brand">
       <img src="{% static 'finance/images/logo.png' %}" alt="Ecolith"
-           style="width:38px;height:38px;border-radius:10px;object-fit:cover;background:#000;border:1px solid rgba(16,185,129,0.35);box-shadow:0 2px 8px rgba(0,0,0,0.35);"
            onerror="this.style.display='none'">
-      <span>Ecolith Enterprises</span>
+      <div class="nav-brand-text">
+        <h1>Ecolith Enterprises</h1>
+        <p>Batteries · Inverters · Solar &amp; Power Storage</p>
+      </div>
     </a>
-    <div style="display:flex;gap:0.75rem;align-items:center;">
-      <a href="{% url 'login' %}" class="btn btn--ghost" style="font-size:0.88rem;padding:0.55rem 1.1rem;">
-        <i class="fa-regular fa-user"></i> Sign in
+
+    <ul class="nav-links">
+      <li><a href="#home" class="active">Home</a></li>
+      <li><a href="#lithium">Lithium (EW3/EW2)</a></li>
+      <li><a href="#inverters">Inverters</a></li>
+      <li><a href="#solar">Solar Systems</a></li>
+      <li><a href="#lead-acid">Lead-Acid</a></li>
+      <li><a href="#portal">Portal</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <a href="{% url 'login' %}" class="btn-ghost-staff">
+        <i class="fa-regular fa-user"></i> Staff Sign In
       </a>
-      <a href="{% url 'register' %}" class="btn btn--primary btn--glow" style="font-size:0.88rem;padding:0.55rem 1.25rem;">
-        Get started <i class="fa-solid fa-arrow-right"></i>
+      <a href="{% url 'login' %}" class="btn-portal">
+        Workstation <i class="fa-solid fa-arrow-right"></i>
       </a>
     </div>
   </nav>
 
-  <!-- Hero -->
-  <section class="landing-hero-section">
-    <div class="hero-orbs">
-      <span class="orb-1"></span>
-      <span class="orb-2"></span>
-      <span class="orb-3"></span>
-    </div>
-
-    <div class="hero" style="position:relative;z-index:1;">
-      <div class="hero-badge anim-1">
-        <i class="fa-solid fa-bolt"></i> Enterprise Management Suite
+  <!-- Hero Section styled like Adwin Power -->
+  <section class="hero-wrapper" id="home">
+    <div class="hero-banner">
+      <div>
+        <div class="hero-badge">
+          <i class="fa-solid fa-shield-halved"></i> Next-Gen Energy Storage &amp; E-Mobility
+        </div>
+        <h2 class="hero-title">
+          Powering Progress.<br>
+          <span>Driving Clean Energy.</span>
+        </h2>
+        <p class="hero-subtitle">
+          Engineered with precision and backed by millions of proven units. Delivering advanced
+          <strong>EW3 &amp; EW2 LiFePO4 Lithium Batteries</strong>, high-efficiency solar inverters,
+          and robust heavy-duty energy solutions for residential, commercial, and e-mobility needs.
+        </p>
+        <div class="hero-actions">
+          <a href="#lithium" class="btn-hero-primary">
+            Explore EW Series <i class="fa-solid fa-arrow-down"></i>
+          </a>
+          <a href="{% url 'login' %}" class="btn-hero-secondary">
+            <i class="fa-solid fa-desktop"></i> Open Workstation
+          </a>
+        </div>
       </div>
 
-      <h1 class="anim-2">
-        Run your business<br>
-        <span class="gradient-text">with total clarity</span>
-      </h1>
+      <div class="hero-graphic">
+        <div class="hero-visual-card">
+          <div class="hero-feature-item">
+            <div class="hero-feature-icon"><i class="fa-solid fa-car-battery"></i></div>
+            <div class="hero-feature-text">
+              <h4>Adwin EW Series Lithium</h4>
+              <p>51.2V / 64V LiFePO4 Smart Battery Packs</p>
+            </div>
+          </div>
+          <div class="hero-feature-item">
+            <div class="hero-feature-icon"><i class="fa-solid fa-solar-panel"></i></div>
+            <div class="hero-feature-text">
+              <h4>Integrated Solar Solutions</h4>
+              <p>Hybrid MPPT inverters and rooftop setups</p>
+            </div>
+          </div>
+          <div class="hero-feature-item">
+            <div class="hero-feature-icon"><i class="fa-solid fa-bolt"></i></div>
+            <div class="hero-feature-text">
+              <h4>Pure Sine Wave Inverters</h4>
+              <p>Zero switchover delay with built-in protection</p>
+            </div>
+          </div>
+          <div class="hero-feature-item">
+            <div class="hero-feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
+            <div class="hero-feature-text">
+              <h4>Branch Network</h4>
+              <p>Direct supply &amp; support in Itahari &amp; Birtamode</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-      <p class="anim-3">
-        A complete platform for Ecolith Enterprises — real-time financial tracking,
-        smart inventory, customer ledgers, and professional billing, all in one place.
-      </p>
+  <!-- Metrics Ribbon -->
+  <section class="metrics-section">
+    <div class="metrics-grid">
+      <div class="metric-col">
+        <div class="metric-val">3.5<span>M+</span></div>
+        <div class="metric-label">Power Units Delivered</div>
+      </div>
+      <div class="metric-col">
+        <div class="metric-val">14<span>+</span></div>
+        <div class="metric-label">Global &amp; Regional Markets</div>
+      </div>
+      <div class="metric-col">
+        <div class="metric-val">3000<span>+</span></div>
+        <div class="metric-label">Cycles at 80% DoD on Lithium</div>
+      </div>
+      <div class="metric-col">
+        <div class="metric-val">100<span>%</span></div>
+        <div class="metric-label">ISO &amp; ARAI Standard Compliance</div>
+      </div>
+    </div>
+  </section>
 
-      <div class="hero-cta anim-4">
-        <a href="{% url 'register' %}" class="btn btn--primary btn--glow" style="padding:0.85rem 2rem;font-size:1rem;">
-          Start for free <i class="fa-solid fa-arrow-right"></i>
+  <!-- ════════════════════════════════════════════════════════
+       MAIN PRODUCT SHOWCASE: FOCUSED ON EW3 & EW2 LITHIUM
+       ════════════════════════════════════════════════════════ -->
+  <section class="section-wrap" id="lithium">
+    <div class="section-header-row">
+      <div>
+        <div class="section-tag"><i class="fa-solid fa-fire-flame-curved"></i> Flagship Power Lines</div>
+        <h3 class="section-title">Adwin EW Series Lithium Batteries</h3>
+        <p class="section-desc">
+          State-of-the-art Lithium Iron Phosphate (LiFePO4) chemistry engineered for extreme durability,
+          rapid charging, thermal safety, and zero maintenance.
+        </p>
+      </div>
+      <a href="{% url 'login' %}" style="font-size:0.9rem;font-weight:700;color:var(--adwin-green);">
+        View In Inventory <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="featured-grid">
+      <!-- EW3 Lithium Battery -->
+      <div class="featured-card">
+        <div>
+          <span class="featured-badge"><i class="fa-solid fa-star"></i> Flagship E-Mobility &amp; Storage</span>
+          <h4 class="featured-title">Adwin EW3 Lithium Battery Pack</h4>
+          <p class="featured-spec">51.2V 105Ah / 64V 105Ah · Grade-A LiFePO4</p>
+          <p class="featured-desc">
+            Designed specifically for heavy-duty electric rickshaws, commercial fleet mobility, and high-capacity
+            solar home backup. Features an intelligent smart BMS with real-time cell balancing, IoT diagnostics,
+            and 3,500+ deep life cycles.
+          </p>
+          <div class="spec-badges">
+            <span class="spec-pill"><i class="fa-solid fa-microchip"></i> Smart Active BMS</span>
+            <span class="spec-pill"><i class="fa-solid fa-clock"></i> 3-Hour Rapid Fast Charge</span>
+            <span class="spec-pill"><i class="fa-solid fa-shield-virus"></i> Thermal Runway Protection</span>
+            <span class="spec-pill"><i class="fa-solid fa-weight-hanging"></i> 70% Lighter than Lead-Acid</span>
+          </div>
+        </div>
+        <div style="border-top:1px solid var(--adwin-border);padding-top:1.25rem;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:0.85rem;color:var(--text-sub);">Standard: <strong>51.2V / 64V Configurations</strong></span>
+          <a href="{% url 'login' %}" class="btn-portal" style="padding:0.5rem 1rem;font-size:0.82rem;">Create Bill</a>
+        </div>
+      </div>
+
+      <!-- EW2 Lithium Battery -->
+      <div class="featured-card">
+        <div>
+          <span class="featured-badge" style="background:#e0f2fe;color:#0369a1;"><i class="fa-solid fa-bolt"></i> High Efficiency Compact</span>
+          <h4 class="featured-title">Adwin EW2 Lithium Battery Pack</h4>
+          <p class="featured-spec">48V / 51.2V Compact LiFePO4 Series</p>
+          <p class="featured-desc">
+            The ideal plug-and-play lithium upgrade for domestic inverters, small solar setups, and light commercial applications.
+            Delivers consistent voltage discharge, high energy density, and zero noxious fume emissions.
+          </p>
+          <div class="spec-badges">
+            <span class="spec-pill"><i class="fa-solid fa-arrows-spin"></i> 3000+ Deep Cycles</span>
+            <span class="spec-pill"><i class="fa-solid fa-leaf"></i> 100% Maintenance Free</span>
+            <span class="spec-pill"><i class="fa-solid fa-plug-circle-bolt"></i> Universal Inverter Ready</span>
+            <span class="spec-pill"><i class="fa-solid fa-gauge-high"></i> High Surge Current Output</span>
+          </div>
+        </div>
+        <div style="border-top:1px solid var(--adwin-border);padding-top:1.25rem;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:0.85rem;color:var(--text-sub);">Application: <strong>Solar &amp; Home Backup</strong></span>
+          <a href="{% url 'login' %}" class="btn-portal" style="padding:0.5rem 1rem;font-size:0.82rem;background:#0369a1;">Check Stock</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════
+         CORE TIERS: INVERTERS, SOLAR SYSTEMS, LEAD-ACID
+         ════════════════════════════════════════════════════════ -->
+    <div class="section-header-row" style="margin-top:2rem;">
+      <div>
+        <div class="section-tag"><i class="fa-solid fa-layer-group"></i> Complete Power Solutions</div>
+        <h3 class="section-title">Inverters, Solar &amp; Heavy-Duty Lead-Acid</h3>
+        <p class="section-desc">Reliable hardware for commercial and residential power infrastructure.</p>
+      </div>
+    </div>
+
+    <div class="products-category-grid">
+      <!-- 1. Inverters -->
+      <div class="category-card" id="inverters">
+        <div>
+          <div class="category-icon"><i class="fa-solid fa-bolt"></i></div>
+          <h4 class="category-title">Pure Sine Wave Inverters</h4>
+          <p class="category-desc">
+            Advanced digital DSP-controlled inverters designed to run sensitive home electronics, office machinery,
+            and industrial motors without humming or voltage spikes.
+          </p>
+          <ul class="category-features-list">
+            <li><i class="fa-solid fa-check"></i> 1KVA to 10KVA Pure Sine Wave models</li>
+            <li><i class="fa-solid fa-check"></i> Lithium &amp; Tubular battery dual mode</li>
+            <li><i class="fa-solid fa-check"></i> Smart overload &amp; short circuit cut-off</li>
+            <li><i class="fa-solid fa-check"></i> High efficiency transformer-based design</li>
+          </ul>
+        </div>
+        <a href="{% url 'login' %}" class="btn-ghost-staff" style="justify-content:center;text-align:center;">
+          Manage Inverter Stock
         </a>
-        <a href="{% url 'login' %}" class="btn btn--ghost" style="padding:0.85rem 2rem;font-size:1rem;">
-          <i class="fa-solid fa-right-to-bracket"></i> Sign in
+      </div>
+
+      <!-- 2. Solar Systems -->
+      <div class="category-card" id="solar">
+        <div>
+          <div class="category-icon" style="background:#fffbeb;color:#d97706;"><i class="fa-solid fa-solar-panel"></i></div>
+          <h4 class="category-title">Solar Power Systems</h4>
+          <p class="category-desc">
+            Complete turnkey renewable setups: Tier-1 Mono PERC solar panels, MPPT Solar PCUs, and hybrid
+            charge controllers for maximum energy harvesting in all weather conditions.
+          </p>
+          <ul class="category-features-list">
+            <li><i class="fa-solid fa-check"></i> High-yield Mono PERC &amp; Polycrystalline panels</li>
+            <li><i class="fa-solid fa-check"></i> MPPT solar hybrid power conditioning units</li>
+            <li><i class="fa-solid fa-check"></i> Grid-tied, off-grid &amp; hybrid configurations</li>
+            <li><i class="fa-solid fa-check"></i> Maximum power harvest in cloudy climates</li>
+          </ul>
+        </div>
+        <a href="{% url 'login' %}" class="btn-ghost-staff" style="justify-content:center;text-align:center;color:#d97706;border-color:#d97706;">
+          View Solar Catalogue
         </a>
       </div>
 
-      <div class="hero-stats anim-5">
-        <div class="stat-pill">
-          <i class="fa-solid fa-chart-line"></i> Live analytics
+      <!-- 3. Lead-Acid Batteries -->
+      <div class="category-card" id="lead-acid">
+        <div>
+          <div class="category-icon" style="background:#f1f5f9;color:#334155;"><i class="fa-solid fa-car-battery"></i></div>
+          <h4 class="category-title">Lead-Acid &amp; Tubular Batteries</h4>
+          <p class="category-desc">
+            Heavy-duty deep-cycle tubular batteries (including 150E, 200Ah models) built with thick spine alloy plates
+            for rugged commercial durability and long-duration blackouts.
+          </p>
+          <ul class="category-features-list">
+            <li><i class="fa-solid fa-check"></i> Tall tubular &amp; short tubular options</li>
+            <li><i class="fa-solid fa-check"></i> Specially treated active paste formulation</li>
+            <li><i class="fa-solid fa-check"></i> Heavy-duty cycle life with minimal water top-up</li>
+            <li><i class="fa-solid fa-check"></i> High cranking &amp; deep discharge resilience</li>
+          </ul>
         </div>
-        <div class="stat-pill">
-          <i class="fa-solid fa-shield-halved"></i> Role-based access
+        <a href="{% url 'login' %}" class="btn-ghost-staff" style="justify-content:center;text-align:center;color:#334155;border-color:#334155;">
+          Check Lead-Acid Inventory
+        </a>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════
+         SECONDARY SOLUTIONS (Automotive, Lighting, Agri)
+         ════════════════════════════════════════════════════════ -->
+    <div class="secondary-section">
+      <div style="text-align:center;max-width:700px;margin:0 auto;">
+        <span style="font-size:0.8rem;font-weight:800;color:var(--adwin-green);text-transform:uppercase;letter-spacing:0.06em;">Secondary Product Lines</span>
+        <h3 style="font-size:1.6rem;font-weight:800;margin:0.3rem 0 0.6rem;">Specialized Electrical &amp; Commercial Solutions</h3>
+        <p style="font-size:0.9rem;color:var(--text-sub);">Complementing our core power storage lineup with trusted industrial equipment.</p>
+      </div>
+
+      <div class="secondary-grid">
+        <div class="secondary-card">
+          <i class="fa-solid fa-car"></i>
+          <h4>Automotive Batteries</h4>
+          <p>Instant cranking power for passenger cars, trucks, tractors, and heavy construction equipment.</p>
         </div>
-        <div class="stat-pill">
-          <i class="fa-solid fa-bolt"></i> Lightning fast
+        <div class="secondary-card">
+          <i class="fa-solid fa-lightbulb"></i>
+          <h4>Smart LED Lighting</h4>
+          <p>Commercial flood lights, industrial bay lights, and energy-efficient architectural fixtures.</p>
         </div>
-        <div class="stat-pill">
-          <i class="fa-solid fa-file-invoice-dollar"></i> Professional billing
+        <div class="secondary-card">
+          <i class="fa-solid fa-wheat-awn"></i>
+          <h4>Agricultural Systems</h4>
+          <p>Dedicated battery packs for solar agricultural water pumps and electric security fencing.</p>
         </div>
+        <div class="secondary-card">
+          <i class="fa-solid fa-screwdriver-wrench"></i>
+          <h4>Accessories &amp; Chargers</h4>
+          <p>Smart multi-stage lithium chargers, battery cables, DC breakers, and battery racks.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════
+         INTERNAL BUSINESS PORTAL CALLOUT
+         ════════════════════════════════════════════════════════ -->
+    <div class="portal-banner" id="portal">
+      <div>
+        <span style="display:inline-flex;align-items:center;gap:0.4rem;background:rgba(255,255,255,0.15);padding:0.25rem 0.75rem;border-radius:999px;font-size:0.75rem;font-weight:700;margin-bottom:0.75rem;">
+          <i class="fa-solid fa-lock"></i> Authorised Staff &amp; Dealer Access
+        </span>
+        <h3>Ecolith Workstation Management Suite</h3>
+        <p>
+          Internal portal for our Itahari HQ &amp; Birtamode Branch teams to manage sales invoices,
+          customer ledgers, inventory dispatches, and real-time financial reporting.
+        </p>
+      </div>
+      <div style="flex-shrink:0;">
+        <a href="{% url 'login' %}" class="btn-hero-primary" style="padding:0.9rem 2rem;">
+          Log In To Workstation <i class="fa-solid fa-arrow-right"></i>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- Features -->
-  <section style="position:relative;z-index:1;">
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon"><i class="fa-solid fa-chart-pie"></i></div>
-        <h3>Financial Dashboard</h3>
-        <p>Track revenue, expenses, and net cash flow in real time. Understand your business health at a glance with clean, actionable summaries.</p>
-      </div>
-      <div class="feature-card secondary">
-        <div class="feature-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
-        <h3>Inventory Control</h3>
-        <p>Monitor stock levels, valuations, and reorder alerts. Adjustments and bill-linked deductions keep quantities always accurate.</p>
-      </div>
-      <div class="feature-card accent">
-        <div class="feature-icon"><i class="fa-solid fa-users"></i></div>
-        <h3>Customer Ledgers</h3>
-        <p>Full debit/credit history per customer. Receivables and payables tracked automatically — know exactly who owes what.</p>
-      </div>
-      <div class="feature-card" style="--feat-c:var(--amber);--feat-bg:var(--amber-bg);">
-        <div class="feature-icon" style="background:var(--amber-bg);color:var(--amber);">
-          <i class="fa-solid fa-file-invoice"></i>
+  <!-- Global Footer -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+          <img src="{% static 'finance/images/logo.png' %}" alt="Ecolith" style="width:36px;height:36px;border-radius:8px;border:1px solid var(--adwin-green);">
+          <h4 style="margin:0;font-size:1.15rem;">Ecolith Enterprises</h4>
         </div>
-        <h3>Sales Billing</h3>
-        <p>Generate professional sales bills with line items, discounts, and payment modes. Cancel and restore inventory with one click.</p>
+        <p>
+          Official partner and regional distributor for <strong>Adwin Power Solutions</strong>.
+          Pioneering reliable energy storage, advanced lithium battery engineering, and sustainable solar in Nepal.
+        </p>
+        <p style="font-size:0.8rem;color:#7b8b82;">
+          <i class="fa-solid fa-location-dot" style="color:#10b981;margin-right:0.4rem;"></i>
+          Headquarters: Itahari, Sunsari · Regional Branch: Birtamode, Jhapa, Nepal
+        </p>
       </div>
-      <div class="feature-card" style="">
-        <div class="feature-icon" style="background:rgba(244,63,94,0.10);color:#f43f5e;">
-          <i class="fa-solid fa-chart-bar"></i>
-        </div>
-        <h3>Reports & Insights</h3>
-        <p>Category breakdowns, profit margins, customer statements, and inventory valuation — everything you need to make smart decisions.</p>
+
+      <div class="footer-col">
+        <h4>Core Products</h4>
+        <ul class="footer-links">
+          <li><a href="#lithium">Adwin EW3 Lithium Battery</a></li>
+          <li><a href="#lithium">Adwin EW2 Lithium Battery</a></li>
+          <li><a href="#inverters">Pure Sine Wave Inverters</a></li>
+          <li><a href="#solar">Solar Panels &amp; Hybrid PCUs</a></li>
+          <li><a href="#lead-acid">Tubular &amp; Lead-Acid Batteries</a></li>
+        </ul>
       </div>
-      <div class="feature-card" style="">
-        <div class="feature-icon" style="background:rgba(16,185,129,0.10);color:var(--primary);">
-          <i class="fa-solid fa-shield-halved"></i>
-        </div>
-        <h3>Secure by Design</h3>
-        <p>Role-based access, approval workflows, login rate-limiting, and hardened HTTP headers keep your data protected.</p>
+
+      <div class="footer-col">
+        <h4>Workstation</h4>
+        <ul class="footer-links">
+          <li><a href="{% url 'login' %}">Staff Sign In</a></li>
+          <li><a href="{% url 'register' %}">Request Account</a></li>
+          <li><a href="{% url 'sales_bills' %}">Sales Invoicing (कर बिजक)</a></li>
+          <li><a href="{% url 'customers' %}">Customer Ledgers</a></li>
+          <li><a href="{% url 'inventory' %}">Stock &amp; Warehouse</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Direct Contact</h4>
+        <p><i class="fa-solid fa-envelope" style="color:#10b981;margin-right:0.4rem;"></i> info@adwinpower.com</p>
+        <p><i class="fa-solid fa-phone" style="color:#10b981;margin-right:0.4rem;"></i> Customer Care: 1800 8914 007</p>
+        <p><i class="fa-solid fa-shield-halved" style="color:#10b981;margin-right:0.4rem;"></i> 256-Bit Encrypted IRD Compliant</p>
       </div>
     </div>
-  </section>
 
-  <!-- CTA Banner -->
-  <section class="cta-section">
-    <h2>Ready to take control?</h2>
-    <p>Create your account and start managing Ecolith Enterprises smarter today.</p>
-    <a href="{% url 'register' %}" class="btn btn--primary btn--glow" style="padding:0.9rem 2.25rem;font-size:1rem;">
-      Get started for free <i class="fa-solid fa-arrow-right"></i>
-    </a>
-  </section>
-
-  <!-- Footer -->
-  <footer class="landing-footer">
-    <span><strong>Ecolith Enterprises</strong> · Itahari, Sunsari</span>
-    <span>Built with precision &amp; care</span>
+    <div class="footer-bottom">
+      <span>&copy; {% now "Y" %} Ecolith Enterprises &amp; Adwin Power Solutions. All rights reserved.</span>
+      <div style="display:flex;gap:1.5rem;">
+        <a href="https://adwinpower.com" target="_blank" rel="noopener">Adwin Official Site</a>
+        <a href="{% url 'login' %}">Employee Portal</a>
+      </div>
+    </div>
   </footer>
 
 </body>
